@@ -11,7 +11,7 @@ from aiogram.types import WebAppInfo
 from aiogram.utils.executor import start_webhook
 
 # ==================== НАСТРОЙКИ ====================
-BOT_TOKEN = os.environ.get('BOT_TOKEN', '8132623719:AAEmIGec7aXk6DUwFH_N-06qUnurHi5Z8uI')
+BOT_TOKEN = os.environ.get('BOT_TOKEN')
 BOT_USERNAME = "diggerfest_bot"
 WEBAPP_URL = 'https://muhammadaminpy.github.io/diggerfest/'
 
@@ -237,4 +237,5 @@ if __name__ == "__main__":
         host='0.0.0.0',
         port=PORT
     )
+
 
