@@ -1,0 +1,1476 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Просто DIGGER</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root {
+            --bg-primary: #0a1628;
+            --bg-secondary: #0f2847;
+            --bg-card: rgba(15, 40, 71, 0.85);
+            --accent-gold: #ffd700;
+            --accent-silver: #c0c0c0;
+            --accent-bronze: #cd7f32;
+            --accent-blue: #4fc3f7;
+            --accent-cyan: #00e5ff;
+            --text-primary: #ffffff;
+            --text-secondary: #a0c4e8;
+            --success: #4caf50;
+            --danger: #ff5252;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(180deg, #0a1628 0%, #0d1f3c 50%, #102a52 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Звездное небо */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .star {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite ease-in-out;
+        }
+
+        .shooting-star {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: linear-gradient(45deg, #fff, #4fc3f7);
+            border-radius: 50%;
+            box-shadow: 0 0 10px #4fc3f7, 0 0 20px #4fc3f7;
+            animation: shoot 3s linear infinite;
+        }
+
+        .shooting-star::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(79, 195, 247, 0.8), transparent);
+            right: 4px;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        @keyframes shoot {
+            0% { transform: translateX(-100px) translateY(-100px); opacity: 1; }
+            70% { opacity: 1; }
+            100% { transform: translateX(calc(100vw + 100px)) translateY(calc(100vh + 100px)); opacity: 0; }
+        }
+
+        /* Снежинки */
+        .snowflake {
+            position: fixed;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            animation: fall linear infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0.3; }
+        }
+
+        /* Санта на санях */
+        .santa-container {
+            position: fixed;
+            top: 10%;
+            left: -200px;
+            z-index: 2;
+            animation: santaFly 20s linear infinite;
+            pointer-events: none;
+        }
+
+        .santa {
+            font-size: 2.5rem;
+            filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+        }
+
+        @keyframes santaFly {
+            0% { left: -200px; top: 10%; }
+            25% { top: 15%; }
+            50% { left: 110%; top: 8%; }
+            51% { left: -200px; top: 25%; }
+            75% { top: 20%; }
+            100% { left: 110%; top: 25%; }
+        }
+
+        /* Заголовок */
+        .header {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 20px 16px 10px;
+            background: linear-gradient(180deg, rgba(10, 22, 40, 0.95) 0%, transparent 100%);
+        }
+
+        .logo {
+            font-family: 'Russo One', sans-serif;
+            font-size: 2rem;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, #ffeb3b 50%, var(--accent-gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .logo i {
+            -webkit-text-fill-color: var(--accent-gold);
+            animation: pickaxe 2s ease-in-out infinite;
+        }
+
+        @keyframes pickaxe {
+            0%, 100% { transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        /* Основной контент */
+        .main-content {
+            position: relative;
+            z-index: 10;
+            padding: 10px 16px 100px;
+            min-height: calc(100vh - 160px);
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Карточки */
+        .card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(79, 195, 247, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-title {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Профиль */
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 2.5rem;
+            border: 4px solid var(--accent-gold);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-name {
+            font-family: 'Russo One', sans-serif;
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 5px;
+        }
+
+        .profile-id {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .balance-display {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 235, 59, 0.1));
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .balance-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .balance-amount {
+            font-family: 'Russo One', sans-serif;
+            font-size: 2.5rem;
+            color: var(--accent-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .balance-amount i {
+            font-size: 2rem;
+        }
+
+        /* Кнопки */
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 14px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            color: var(--bg-primary);
+            box-shadow: 0 4px 20px rgba(79, 195, 247, 0.4);
+        }
+
+        .btn-primary:hover, .btn-primary:active {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(79, 195, 247, 0.5);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, var(--accent-gold), #ffeb3b);
+            color: var(--bg-primary);
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn-gold:hover, .btn-gold:active {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(255, 215, 0, 0.5);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Реферальная секция */
+        .ref-link-box {
+            background: rgba(79, 195, 247, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(79, 195, 247, 0.3);
+        }
+
+        .ref-link {
+            font-size: 0.85rem;
+            word-break: break-all;
+            color: var(--accent-cyan);
+            margin-bottom: 12px;
+        }
+
+        .ref-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 10px;
+        }
+
+        .ref-stat {
+            text-align: center;
+        }
+
+        .ref-stat-value {
+            font-family: 'Russo One', sans-serif;
+            font-size: 1.8rem;
+            color: var(--accent-gold);
+        }
+
+        .ref-stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Топ листинг */
+        .top-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .top-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .top-item.rank-1 {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 235, 59, 0.1));
+            border: 1px solid var(--accent-gold);
+        }
+
+        .top-item.rank-2 {
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.3), rgba(192, 192, 192, 0.1));
+            border: 1px solid var(--accent-silver);
+        }
+
+        .top-item.rank-3 {
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.3), rgba(205, 127, 50, 0.1));
+            border: 1px solid var(--accent-bronze);
+        }
+
+        .top-item.rank-4, .top-item.rank-5 {
+            background: linear-gradient(135deg, rgba(79, 195, 247, 0.2), rgba(79, 195, 247, 0.05));
+            border: 1px solid rgba(79, 195, 247, 0.3);
+        }
+
+        .top-rank {
+            font-family: 'Russo One', sans-serif;
+            font-size: 1.2rem;
+            min-width: 35px;
+            text-align: center;
+        }
+
+        .rank-1 .top-rank { color: var(--accent-gold); }
+        .rank-2 .top-rank { color: var(--accent-silver); }
+        .rank-3 .top-rank { color: var(--accent-bronze); }
+        .rank-4 .top-rank, .rank-5 .top-rank { color: var(--accent-cyan); }
+
+        .top-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            overflow: hidden;
+        }
+
+        .top-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .top-info {
+            flex: 1;
+        }
+
+        .top-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .top-refs {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .top-refs i {
+            color: var(--accent-gold);
+            margin-right: 4px;
+        }
+
+        /* История */
+        .story-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .story-chapter {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border: 1px solid rgba(79, 195, 247, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .story-chapter:hover {
+            border-color: var(--accent-cyan);
+            transform: translateX(5px);
+        }
+
+        .story-chapter.locked {
+            opacity: 0.6;
+        }
+
+        .story-chapter.unlocked {
+            border-color: var(--success);
+            background: rgba(76, 175, 80, 0.1);
+        }
+
+        .story-chapter.available {
+            border-color: var(--accent-gold);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
+            50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+        }
+
+        .chapter-num {
+            font-family: 'Russo One', sans-serif;
+            font-size: 1.5rem;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            color: var(--bg-primary);
+        }
+
+        .story-chapter.unlocked .chapter-num {
+            background: linear-gradient(135deg, var(--success), #81c784);
+        }
+
+        .chapter-info {
+            flex: 1;
+        }
+
+        .chapter-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .chapter-status {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chapter-status i {
+            color: var(--accent-gold);
+        }
+
+        .chapter-price {
+            font-family: 'Russo One', sans-serif;
+            font-size: 1.1rem;
+            color: var(--accent-gold);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .story-chapter.unlocked .chapter-price {
+            color: var(--success);
+        }
+
+        /* Модальное окно */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-secondary);
+            border-radius: 24px;
+            padding: 24px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid rgba(79, 195, 247, 0.3);
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-family: 'Russo One', sans-serif;
+            font-size: 1.3rem;
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-body {
+            color: var(--text-secondary);
+            line-height: 1.7;
+        }
+
+        .story-content {
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        .story-easter-egg {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 235, 59, 0.1));
+            border: 1px solid var(--accent-gold);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .easter-label {
+            font-size: 0.8rem;
+            color: var(--accent-gold);
+            margin-bottom: 8px;
+        }
+
+        .easter-word {
+            font-family: 'Russo One', sans-serif;
+            font-size: 1.5rem;
+            color: var(--accent-gold);
+        }
+
+        /* Форма пополнения */
+        .topup-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 16px 20px;
+            padding-left: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(79, 195, 247, 0.3);
+            border-radius: 12px;
+            color: white;
+            font-size: 1.2rem;
+            font-family: 'Nunito', sans-serif;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-group input:focus {
+            border-color: var(--accent-cyan);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-gold);
+            font-size: 1.2rem;
+        }
+
+        .input-hint {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        /* Нижняя навигация */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(10, 22, 40, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 12px 16px;
+            padding-bottom: max(12px, env(safe-area-inset-bottom));
+            display: flex;
+            justify-content: space-around;
+            z-index: 50;
+            border-top: 1px solid rgba(79, 195, 247, 0.2);
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 20px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+        }
+
+        .nav-item i {
+            font-size: 1.4rem;
+        }
+
+        .nav-item.active {
+            color: var(--accent-cyan);
+            background: rgba(79, 195, 247, 0.15);
+        }
+
+        .nav-item.active i {
+            transform: scale(1.1);
+        }
+
+        /* Уведомления */
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--bg-secondary);
+            padding: 16px 24px;
+            border-radius: 12px;
+            border: 1px solid rgba(79, 195, 247, 0.3);
+            z-index: 200;
+            transition: transform 0.3s ease;
+            max-width: 90%;
+            text-align: center;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success {
+            border-color: var(--success);
+            background: rgba(76, 175, 80, 0.2);
+        }
+
+        .toast.error {
+            border-color: var(--danger);
+            background: rgba(255, 82, 82, 0.2);
+        }
+
+        /* Лимит историй */
+        .daily-limit {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.9rem;
+        }
+
+        .daily-limit i {
+            color: #ffc107;
+            font-size: 1.2rem;
+        }
+
+        /* Скроллбар */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(79, 195, 247, 0.3);
+            border-radius: 3px;
+        }
+
+        /* Админ панель */
+        #pageAdmin {
+            display: none;
+        }
+        .admin-stat {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+        .admin-stat label {
+            font-weight: bold;
+        }
+        .admin-stat value {
+            float: right;
+            color: var(--accent-gold);
+        }
+    </style>
+</head>
+<body>
+    <!-- Новогодняя музыка -->
+    <audio autoplay loop>
+        <source src="https://example.com/newyear_music.mp3" type="audio/mpeg"> <!-- Замените на реальный URL бесплатной новогодней музыки -->
+        Ваш браузер не поддерживает аудио.
+    </audio>
+
+    <!-- Звезды и снег -->
+    <div class="stars-container" id="starsContainer"></div>
+
+    <!-- Санта -->
+    <div class="santa-container">
+        <div class="santa">🎅🛷🎁</div>
+    </div>
+
+    <!-- Заголовок -->
+    <header class="header">
+        <h1 class="logo">
+            <i class="fas fa-gem"></i>
+            Просто DIGGER
+        </h1>
+        <p class="subtitle">🎄 Новогодний майнинг в мире TON 🎄</p>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="main-content">
+        <!-- Профиль -->
+        <div class="page active" id="pageProfile">
+            <div class="card">
+                <div class="profile-avatar" id="profileAvatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h2 class="profile-name" id="profileName">Загрузка...</h2>
+                <p class="profile-id" id="profileId">ID: ...</p>
+            </div>
+
+            <div class="card">
+                <div class="balance-display">
+                    <p class="balance-label">Ваш баланс</p>
+                    <div class="balance-amount">
+                        <i class="fas fa-star"></i>
+                        <span id="balanceAmount">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-gold" onclick="openTopupModal()">
+                <i class="fas fa-plus-circle"></i>
+                Пополнить
+            </button>
+        </div>
+
+        <!-- ТОП -->
+        <div class="page" id="pageTop">
+            <div class="card">
+                <h3 class="card-title">Ваша реферальная ссылка</h3>
+                <div class="ref-link-box">
+                    <p class="ref-link" id="refLink">Загрузка...</p>
+                    <button class="btn btn-primary" onclick="copyRefLink()">
+                        <i class="fas fa-copy"></i>
+                        Скопировать
+                    </button>
+                </div>
+                <div class="ref-stats">
+                    <div class="ref-stat">
+                        <div class="ref-stat-value" id="refCount">0</div>
+                        <div class="ref-stat-label">Рефералов</div>
+                    </div>
+                    <div class="ref-stat">
+                        <div class="ref-stat-value" id="refEarnings">0</div>
+                        <div class="ref-stat-label">Заработано ⭐</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">🏆 ТОП-25 рефереров</h3>
+                <div class="top-list" id="topList">
+                    <!-- Динамический контент -->
+                </div>
+            </div>
+        </div>
+
+        <!-- История -->
+        <div class="page" id="pageHistory">
+            <div class="daily-limit">
+                <i class="fas fa-clock"></i>
+                <span>Сегодня открыто: <strong id="dailyOpened">0</strong>/2 историй</span>
+            </div>
+
+            <div class="card">
+                <h3 class="card-title">📖 История Просто Digger</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 16px;">
+                    Собери все 11 глав и раскрой секретное послание!
+                </p>
+                <div class="story-grid" id="storyGrid">
+                    <!-- Динамический контент -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Админ панель -->
+        <div class="page" id="pageAdmin">
+            <div class="card">
+                <h3 class="card-title">Админ Панель</h3>
+                <div class="admin-stat">
+                    <label>Открыто историй сегодня:</label>
+                    <value id="adminDailyOpens">0</value>
+                </div>
+                <div class="admin-stat">
+                    <label>Заработано за 24 часа:</label>
+                    <value id="adminEarn24h">0 ⭐</value>
+                </div>
+                <div class="admin-stat">
+                    <label>Заработано за 7 дней:</label>
+                    <value id="adminEarn7d">0 ⭐</value>
+                </div>
+                <div class="admin-stat">
+                    <label>Заработано за 10 дней:</label>
+                    <value id="adminEarn10d">0 ⭐</value>
+                </div>
+                <div class="admin-stat">
+                    <label>Первый завершивший все истории:</label>
+                    <value id="adminFirstCompleter">Никто</value>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Нижняя навигация -->
+    <nav class="bottom-nav" id="bottomNav">
+        <button class="nav-item active" onclick="showPage('Profile')">
+            <i class="fas fa-user"></i>
+            <span>Профиль</span>
+        </button>
+        <button class="nav-item" onclick="showPage('Top')">
+            <i class="fas fa-trophy"></i>
+            <span>ТОП</span>
+        </button>
+        <button class="nav-item" onclick="showPage('History')">
+            <i class="fas fa-book"></i>
+            <span>История</span>
+        </button>
+    </nav>
+
+    <!-- Модальное окно пополнения -->
+    <div class="modal-overlay" id="topupModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">⭐ Пополнение Stars</h3>
+                <button class="modal-close" onclick="closeModal('topupModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="topup-form">
+                    <div class="input-group">
+                        <i class="fas fa-star"></i>
+                        <input type="number" id="topupAmount" placeholder="Количество Stars" min="29" value="29">
+                    </div>
+                    <p class="input-hint">Минимум: 29 Stars</p>
+                    <button class="btn btn-gold" onclick="processTopup()">
+                        <i class="fas fa-bolt"></i>
+                        Оплатить через Telegram
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно истории -->
+    <div class="modal-overlay" id="storyModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="storyModalTitle">Глава 1</h3>
+                <button class="modal-close" onclick="closeModal('storyModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="story-content" id="storyModalContent">
+                    <!-- Контент истории -->
+                </div>
+                <div class="story-easter-egg">
+                    <p class="easter-label">🔮 Пасхальное слово:</p>
+                    <p class="easter-word" id="storyEasterWord">???</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно покупки главы -->
+    <div class="modal-overlay" id="buyChapterModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">🔓 Открыть главу</h3>
+                <button class="modal-close" onclick="closeModal('buyChapterModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p style="text-align: center; margin-bottom: 20px;">
+                    Открыть <strong id="buyChapterName">Главу 1</strong> за <span id="buyChapterPrice" style="color: var(--accent-gold); font-weight: bold;">29 ⭐</span>?
+                </p>
+                <button class="btn btn-gold" onclick="confirmBuyChapter()">
+                    <i class="fas fa-unlock"></i>
+                    Открыть
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast уведомление -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Конфигурация
+        const BOT_USERNAME = 'diggerfest_bot'; // Замените на username вашего бота
+        const ADMIN_ID = 1027715401; // Замените на реальный ID админа
+
+        // Данные истории
+        const storyChapters = [
+            {
+                id: 1,
+                title: "Начало пути",
+                price: 29,
+                content: `В далёком 2017 году, когда мир криптовалют только начинал свой путь к славе, родился необычный персонаж — Просто Digger. Он был простым программистом из Санкт-Петербурга, который мечтал изменить мир.
+
+Однажды, листая новости в Telegram, он наткнулся на странное сообщение о новом блокчейне — TON. "The Open Network" — звучало загадочно и многообещающе. Павел Дуров, создатель Telegram, объявил о революционном проекте.
+
+Digger не мог поверить своим глазам. Это был шанс! Он сразу понял, что должен быть частью этой истории. В ту ночь он не спал — изучал документацию, смотрел видео, читал whitepaper...`,
+                easterWord: "КОПАЙ"
+            },
+            {
+                id: 2,
+                title: "Встреча с Дуровым",
+                price: 29,
+                content: `Прошло несколько месяцев. Digger стал одним из первых майнеров тестовой сети TON. Его узел работал 24/7, добывая тестовые токены.
+
+На одной из закрытых конференций в Дубае судьба свела его с самим Павлом Дуровым. Высокий, в своём фирменном чёрном, Павел говорил о децентрализации и свободе.
+
+"Ты тот самый Digger?" — спросил Павел, увидев его бейдж. "Твой узел показывает лучшие результаты."
+
+Digger не мог поверить. Сам создатель Telegram знает о нём! Они проговорили несколько часов о будущем блокчейна, о мечтах и о том, как изменить финансовую систему мира...`,
+                easterWord: "ГЛУБЖЕ"
+            },
+            {
+                id: 3,
+                title: "Тёмные времена",
+                price: 29,
+                content: `2020 год принёс неожиданный удар. SEC, американский регулятор, заблокировал TON. Миллиарды инвестиций оказались заморожены. Павел объявил о закрытии проекта.
+
+Digger был раздавлен. Месяцы работы, бессонные ночи — всё казалось напрасным. Многие разработчики ушли, но не он.
+
+"Это не конец," — написал он в своём блоге. "Это только начало. Идею невозможно убить."
+
+Он продолжал работать над своими инструментами, совершенствовал код, общался с оставшимися энтузиастами. Они создали сообщество "Free TON", позже ставшее основой для возрождения...`,
+                easterWord: "И"
+            },
+            {
+                id: 4,
+                title: "Возрождение",
+                price: 29,
+                content: `2021 год. Слухи о возвращении TON становились всё громче. Сообщество не сдавалось. Появились новые разработчики, новые идеи.
+
+Digger стал одним из ключевых участников движения. Его инструменты для майнинга использовали тысячи людей по всему миру. Он не брал денег — только донаты в криптовалюте.
+
+Когда официально запустился TON Foundation, Digger получил приглашение стать одним из первых валидаторов. Его мечта сбывалась!
+
+"Мы сделали это вместе," — написал он в своём канале. "Децентрализация победила."`,
+                easterWord: "ТЫ"
+            },
+            {
+                id: 5,
+                title: "Первый миллион",
+                price: 99,
+                content: `К концу 2022 года цена TON начала расти. Digger, который держал свои монеты с самого начала, внезапно стал миллионером.
+
+Но деньги не изменили его. Он продолжал жить в своей маленькой квартире, писать код и помогать новичкам в сообществе. "Деньги — это инструмент, не цель," — говорил он.
+
+На заработанные средства он запустил образовательную платформу для изучения блокчейна. Тысячи людей получили бесплатный доступ к знаниям.
+
+Его история вдохновляла. Журналисты называли его "Робин Гудом криптомира"...`,
+                easterWord: "НАЙДЁШЬ"
+            },
+            {
+                id: 6,
+                title: "Telegram Mini Apps",
+                price: 99,
+                content: `2023 год стал переломным. Telegram запустил Mini Apps — возможность создавать приложения прямо внутри мессенджера с интеграцией TON.
+
+Digger увидел новую возможность. За три недели без сна он создал первое популярное Mini App для майнинга — "Просто DIGGER". Простой интерфейс, честные выплаты, никаких скрытых условий.
+
+Приложение стало вирусным. Миллионы пользователей присоединились за первый месяц. Digger стал легендой в мире Telegram.
+
+"Я просто сделал то, что любил," — скромно отвечал он на вопросы журналистов...`,
+                easterWord: "СВОЙ"
+            },
+            {
+                id: 7,
+                title: "Враги в тени",
+                price: 99,
+                content: `Успех привлёк не только друзей. Конкуренты начали атаки на серверы Digger'а. Хакеры пытались взломать систему, распространялись фейковые новости.
+
+Один из атакующих оказался бывшим партнёром, который хотел украсть код и запустить свой проект. Digger узнал об этом случайно, просматривая логи сервера.
+
+Вместо того чтобы мстить, он публично простил предателя и опубликовал весь код в open source. "Если моя идея хороша — пусть её используют все," — написал он.
+
+Этот поступок сделал его ещё более уважаемым в сообществе...`,
+                easterWord: "ПУТЬ"
+            },
+            {
+                id: 8,
+                title: "Глобальное признание",
+                price: 99,
+                content: `2024 год. Digger получил приглашение выступить на крупнейшей криптоконференции в Сингапуре. Впервые он вышел из тени анонимности.
+
+На сцене стоял обычный парень в простой футболке. Никаких дорогих костюмов или понтов. Его речь о децентрализации и честности в криптомире тронула тысячи людей.
+
+"Я не гений и не визионер," — говорил он. "Я просто копатель, который не сдался, когда было тяжело."
+
+После выступления к нему подошёл сам Виталик Бутерин и пожал руку: "Ты вдохновляешь."`,
+                easterWord: "К"
+            },
+            {
+                id: 9,
+                title: "Новый вызов",
+                price: 199,
+                content: `Но жизнь готовила новое испытание. Глобальный кризис 2024 года обрушил рынки. Многие криптопроекты закрылись. Пользователи "Просто DIGGER" начали паниковать.
+
+Digger собрал экстренный стрим. "Я обещаю: каждый получит свои средства. Мы не обанкротимся."
+
+Он продал часть своих личных активов, чтобы поддержать платформу. Это был огромный риск, но он не мог предать доверие пользователей.
+
+Три месяца борьбы, бессонных ночей и сложных решений. Но платформа выстояла...`,
+                easterWord: "ЗВЁЗДАМ"
+            },
+            {
+                id: 10,
+                title: "Философия копателя",
+                price: 199,
+                content: `Digger часто делился своей философией: "Копай не золото, а знания. Блокчейн — это не про деньги, а про свободу."
+
+Он написал книгу "Просто Копай", которая стала бестселлером в криптосообществе. В ней он рассказал о своём пути, ошибках и уроках.
+
+"Каждый может стать Digger'ом," — писал он. "Нужны только упорство и вера в децентрализацию."`,
+                easterWord: "В"
+            },
+            {
+                id: 11,
+                title: "Наследие",
+                price: 199,
+                content: `Сегодня, в 2025 году, Просто Digger продолжает своё дело. Его приложение используется миллионами, а сообщество TON растёт каждый день.
+
+Павел Дуров иногда шутит: "Без таких, как Digger, TON не был бы таким, какой он есть."
+
+Наследие Digger'а — это не токены или деньги. Это идея, что один человек может изменить мир, просто копая глубже...`,
+                easterWord: "TON"
+            }
+        ];
+
+        // Telegram Web App
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+        const user = tg.initDataUnsafe.user || { id: 123456, first_name: 'Test User', photo_url: '' };
+        const initData = tg.initData;
+
+        // Backend URL (замените на ваш сервер)
+        const backendUrl = 'https://your-backend-server.com/api';
+
+        // Локальные данные (для демо; в реальности загружать с бэкенда)
+        let userData = {
+          balance: 0,
+          refLink: `https://t.me/${BOT_USERNAME}?start=ref${user.id}`,
+          refCount: 0,
+          refEarnings: 0,
+          unlockedChapters: [],
+          dailyOpened: 0
+        };
+
+        // Функции
+        function showPage(pageId) {
+          document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+          document.getElementById(`page${pageId}`).classList.add('active');
+          document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+          document.querySelector(`.nav-item[onclick="showPage('${pageId}')"]`).classList.add('active');
+          loadPageData(pageId);
+        }
+
+        async function loadPageData(pageId) {
+          if (pageId === 'Profile') {
+            await loadProfile();
+          } else if (pageId === 'Top') {
+            await loadTop();
+          } else if (pageId === 'History') {
+            await loadHistory();
+          } else if (pageId === 'Admin') {
+            await loadAdmin();
+          }
+        }
+
+        async function loadProfile() {
+          // Загрузка с бэкенда
+          try {
+            const response = await fetch(`${backendUrl}/user/${user.id}`, {
+              headers: { 'Authorization': initData }
+            });
+            userData = await response.json();
+          } catch (e) {
+            console.error(e);
+          }
+          document.getElementById('profileName').textContent = user.first_name;
+          document.getElementById('profileId').textContent = `ID: ${user.id}`;
+          document.getElementById('balanceAmount').textContent = userData.balance;
+          const avatar = document.getElementById('profileAvatar');
+          if (user.photo_url) {
+            const img = document.createElement('img');
+            img.src = user.photo_url;
+            avatar.innerHTML = '';
+            avatar.appendChild(img);
+          }
+        }
+
+        async function loadTop() {
+          document.getElementById('refLink').textContent = userData.refLink;
+          document.getElementById('refCount').textContent = userData.refCount;
+          document.getElementById('refEarnings').textContent = userData.refEarnings;
+          
+          // Загрузка топа с бэкенда
+          try {
+            const response = await fetch(`${backendUrl}/top`);
+            const topUsers = await response.json();
+            const topList = document.getElementById('topList');
+            topList.innerHTML = '';
+            topUsers.forEach((u, index) => {
+              const item = document.createElement('div');
+              item.className = `top-item rank-${index + 1}`;
+              item.innerHTML = `
+                <span class="top-rank">${index + 1}</span>
+                <div class="top-avatar">
+                  ${u.photo_url ? `<img src="${u.photo_url}">` : '<i class="fas fa-user"></i>'}
+                </div>
+                <div class="top-info">
+                  <div class="top-name">${u.first_name}</div>
+                  <div class="top-refs"><i class="fas fa-users"></i>${u.refCount} рефералов</div>
+                </div>
+              `;
+              topList.appendChild(item);
+            });
+          } catch (e) {
+            console.error(e);
+          }
+        }
+
+        async function loadHistory() {
+          // Загрузка разблокированных глав с бэкенда
+          try {
+            const response = await fetch(`${backendUrl}/unlocks/${user.id}`, {
+              headers: { 'Authorization': initData }
+            });
+            const data = await response.json();
+            userData.unlockedChapters = data.unlocked;
+            userData.dailyOpened = data.dailyOpened;
+          } catch (e) {
+            console.error(e);
+          }
+          
+          document.getElementById('dailyOpened').textContent = userData.dailyOpened;
+          const storyGrid = document.getElementById('storyGrid');
+          storyGrid.innerHTML = '';
+          let prevUnlocked = true;
+          storyChapters.forEach(chapter => {
+            const isUnlocked = userData.unlockedChapters.includes(chapter.id);
+            const canBuy = prevUnlocked && !isUnlocked && userData.dailyOpened < 2;
+            const div = document.createElement('div');
+            div.className = `story-chapter ${isUnlocked ? 'unlocked' : ''} ${canBuy ? 'available' : ''} ${!prevUnlocked ? 'locked' : ''}`;
+            div.innerHTML = `
+              <span class="chapter-num">${chapter.id}</span>
+              <div class="chapter-info">
+                <div class="chapter-title">Глава ${chapter.id}: ${chapter.title}</div>
+                <div class="chapter-status">
+                  ${isUnlocked ? '<i class="fas fa-check-circle"></i> Открыто' : '<i class="fas fa-lock"></i> Закрыто'}
+                </div>
+              </div>
+              <div class="chapter-price">
+                ${chapter.price} <i class="fas fa-star"></i>
+              </div>
+            `;
+            div.onclick = () => {
+              if (isUnlocked) {
+                openStoryModal(chapter);
+              } else if (canBuy) {
+                openBuyChapterModal(chapter);
+              } else {
+                showToast('Нельзя открыть эту главу сейчас', 'error');
+              }
+            };
+            storyGrid.appendChild(div);
+            if (!isUnlocked) prevUnlocked = false;
+          });
+        }
+
+        async function loadAdmin() {
+          try {
+            const response = await fetch(`${backendUrl}/admin/stats`, {
+              headers: { 'Authorization': initData }
+            });
+            if (response.ok) {
+              const stats = await response.json();
+              document.getElementById('adminDailyOpens').textContent = stats.dailyOpens;
+              document.getElementById('adminEarn24h').textContent = `${stats.earn24h} ⭐`;
+              document.getElementById('adminEarn7d').textContent = `${stats.earn7d} ⭐`;
+              document.getElementById('adminEarn10d').textContent = `${stats.earn10d} ⭐`;
+              document.getElementById('adminFirstCompleter').textContent = stats.firstCompleter || 'Никто';
+            } else {
+              showToast('Ошибка загрузки статистики', 'error');
+            }
+          } catch (e) {
+            showToast('Ошибка соединения', 'error');
+          }
+        }
+
+        function openTopupModal() {
+          document.getElementById('topupModal').classList.add('active');
+        }
+
+        function openStoryModal(chapter) {
+          document.getElementById('storyModalTitle').textContent = `Глава ${chapter.id}: ${chapter.title}`;
+          document.getElementById('storyModalContent').innerHTML = chapter.content.replace(/\n/g, '<br>');
+          document.getElementById('storyEasterWord').textContent = chapter.easterWord;
+          document.getElementById('storyModal').classList.add('active');
+        }
+
+        let currentBuyChapter;
+        function openBuyChapterModal(chapter) {
+          currentBuyChapter = chapter;
+          document.getElementById('buyChapterName').textContent = `Главу ${chapter.id}: ${chapter.title}`;
+          document.getElementById('buyChapterPrice').textContent = `${chapter.price} ⭐`;
+          document.getElementById('buyChapterModal').classList.add('active');
+        }
+
+        async function confirmBuyChapter() {
+          closeModal('buyChapterModal');
+          if (userData.balance < currentBuyChapter.price) {
+            showToast('Недостаточно Stars', 'error');
+            return;
+          }
+          // Отправка на бэкенд
+          try {
+            const response = await fetch(`${backendUrl}/buy-chapter`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': initData },
+              body: JSON.stringify({ chapterId: currentBuyChapter.id })
+            });
+            if (response.ok) {
+              userData.unlockedChapters.push(currentBuyChapter.id);
+              userData.dailyOpened++;
+              userData.balance -= currentBuyChapter.price;
+              document.getElementById('balanceAmount').textContent = userData.balance;
+              loadHistory();
+              showToast('Глава открыта!', 'success');
+              openStoryModal(currentBuyChapter);
+            } else {
+              showToast('Ошибка покупки', 'error');
+            }
+          } catch (e) {
+            showToast('Ошибка соединения', 'error');
+          }
+        }
+
+        function processTopup() {
+          const amount = parseInt(document.getElementById('topupAmount').value);
+          if (amount < 29) {
+            showToast('Минимум 29 Stars', 'error');
+            return;
+          }
+          closeModal('topupModal');
+          tg.showConfirm(`Пополнить на ${amount} Stars?`, (confirmed) => {
+            if (confirmed) {
+              // Симуляция оплаты; в реальности используйте Telegram Payments или Stars
+              userData.balance += amount;
+              document.getElementById('balanceAmount').textContent = userData.balance;
+              showToast('Баланс пополнен!', 'success');
+            }
+          });
+        }
+
+        function copyRefLink() {
+          navigator.clipboard.writeText(userData.refLink).then(() => {
+            showToast('Ссылка скопирована!', 'success');
+          });
+        }
+
+        function closeModal(modalId) {
+          document.getElementById(modalId).classList.remove('active');
+        }
+
+        function showToast(message, type = 'success') {
+          const toast = document.getElementById('toast');
+          toast.textContent = message;
+          toast.className = `toast show ${type}`;
+          setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Генерация звезд и снежинок
+        function generateStars() {
+          const container = document.getElementById('starsContainer');
+          for (let i = 0; i < 200; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = `${Math.random() * 100}%`;
+            star.style.top = `${Math.random() * 100}%`;
+            star.style.animationDelay = `${Math.random() * 2}s`;
+            star.style.animationDuration = `${2 + Math.random() * 3}s`;
+            container.appendChild(star);
+          }
+          for (let i = 0; i < 5; i++) {
+            const shooting = document.createElement('div');
+            shooting.className = 'shooting-star';
+            shooting.style.left = `${Math.random() * 100}%`;
+            shooting.style.top = `${Math.random() * 50}%`;
+            shooting.style.animationDelay = `${Math.random() * 5}s`;
+            shooting.style.animationDuration = `${5 + Math.random() * 5}s`;
+            container.appendChild(shooting);
+          }
+        }
+
+        function generateSnowflakes() {
+          for (let i = 0; i < 50; i++) {
+            const flake = document.createElement('div');
+            flake.className = 'snowflake';
+            flake.textContent = '❄';
+            flake.style.left = `${Math.random() * 100}%`;
+            flake.style.animationDuration = `${10 + Math.random() * 20}s`;
+            flake.style.animationDelay = `${Math.random() * 10}s`;
+            flake.style.fontSize = `${0.5 + Math.random() * 1}rem`;
+            flake.style.opacity = Math.random() * 0.5 + 0.5;
+            document.body.appendChild(flake);
+          }
+        }
+
+        // Инициализация
+        async function init() {
+          generateStars();
+          generateSnowflakes();
+          await loadProfile();
+          if (user.id === ADMIN_ID) {
+            const adminButton = document.createElement('button');
+            adminButton.className = 'nav-item';
+            adminButton.onclick = () => showPage('Admin');
+            adminButton.innerHTML = `<i class="fas fa-cog"></i><span>Админ</span>`;
+            document.getElementById('bottomNav').appendChild(adminButton);
+            document.getElementById('pageAdmin').style.display = 'block';
+          }
+          showPage('Profile');
+        }
+
+        init();
+
+        // Закрытие модалов по клику вне
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+          overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) closeModal(overlay.id);
+          });
+        });
+    </script>
+</body>
+</html>
