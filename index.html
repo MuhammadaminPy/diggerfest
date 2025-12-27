@@ -863,60 +863,7 @@
                 <h3 class="card-title">Ваша реферальная ссылка</h3>
                 <div class="ref-link-box">
                     <p class="ref-link" id="refLink">Загрузка...</p>
-                    <button class="btn btn-primary" onclick="copyRefLink()">
-                        <i class="fas fa-copy"></i>
-                        Скопировать
-                    </button>
-                </div>
-                <div class="ref-stats">
-                    <div class="ref-stat">
-                        <div class="ref-stat-value" id="refCount">0</div>
-                        <div class="ref-stat-label">Рефералов</div>
-                    </div>
-                    <div class="ref-stat">
-                        <div class="ref-stat-value" id="refEarnings">0</div>
-                        <div class="ref-stat-label">Заработано ⭐</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3 class="card-title">🏆 ТОП-25 рефереров</h3>
-                <div class="top-list" id="topList">
-                    <!-- Динамический контент -->
-                </div>
-            </div>
-        </div>
-
-        <!-- История -->
-        <div class="page" id="pageHistory">
-            <div class="daily-limit">
-                <i class="fas fa-clock"></i>
-                <span>Сегодня открыто: <strong id="dailyOpened">0</strong>/2 историй</span>
-            </div>
-
-            <div class="card">
-                <h3 class="card-title">📖 История Просто Digger</h3>
-                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 16px;">
-                    Собери все 11 глав и раскрой секретное послание!
-                </p>
-                <div class="story-grid" id="storyGrid">
-                    <!-- Динамический контент -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Админ панель -->
-        <div class="page" id="pageAdmin">
-            <div class="card">
-                <h3 class="card-title">Админ Панель</h3>
-                <div class="admin-stat">
-                    <label>Открыто историй сегодня:</label>
-                    <value id="adminDailyOpens">0</value>
-                </div>
-                <div class="admin-stat">
-                    <label>Заработано за 24 часа:</label>
-                    <value id="adminEarn24h">0 ⭐</value>
+               ...(truncated 2185 characters)...              <value id="adminEarn24h">0 ⭐</value>
                 </div>
                 <div class="admin-stat">
                     <label>Заработано за 7 дней:</label>
@@ -1173,8 +1120,8 @@ Digger собрал экстренный стрим. "Я обещаю: кажд�
         const user = tg.initDataUnsafe.user || { id: 123456, first_name: 'Test User', photo_url: '' };
         const initData = tg.initData;
 
-        // Backend URL (замените на ваш сервер)
-        const backendUrl = 'https://your-backend-server.com/api';
+        // Backend URL (замените на ваш реальный сервер, например, ngrok или production URL)
+        const backendUrl = 'https://quinsied-undeliberatively-kerry.ngrok-free.dev/api';
 
         // Локальные данные (для демо; в реальности загружать с бэкенда)
         let userData = {
@@ -1376,21 +1323,44 @@ Digger собрал экстренный стрим. "Я обещаю: кажд�
           }
         }
 
-        function processTopup() {
+        async function processTopup() {
           const amount = parseInt(document.getElementById('topupAmount').value);
           if (amount < 29) {
             showToast('Минимум 29 Stars', 'error');
             return;
           }
           closeModal('topupModal');
-          tg.showConfirm(`Пополнить на ${amount} Stars?`, (confirmed) => {
-            if (confirmed) {
-              // Симуляция оплаты; в реальности используйте Telegram Payments или Stars
-              userData.balance += amount;
-              document.getElementById('balanceAmount').textContent = userData.balance;
-              showToast('Баланс пополнен!', 'success');
+
+          // Отправка запроса на сервер для создания invoice через Telegram Stars (XTR)
+          try {
+            const response = await fetch(`${backendUrl}/create_invoice`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ initData: tg.initData, amount: amount })
+            });
+            const data = await response.json();
+            if (data.success) {
+              showToast('Счёт отправлен! Проверьте чат с ботом и оплатите через Telegram Stars.', 'success');
+              // Запустить polling для обновления баланса после оплаты
+              startBalancePolling();
+            } else {
+              showToast(data.error || 'Ошибка создания счёта', 'error');
             }
-          });
+          } catch (e) {
+            showToast('Ошибка соединения', 'error');
+          }
+        }
+
+        // Polling для обновления баланса после оплаты (каждые 5 секунд в течение 2 минут)
+        let pollingInterval;
+        function startBalancePolling() {
+          if (pollingInterval) clearInterval(pollingInterval);
+          let attempts = 24; // 2 минуты / 5 сек = 24 попытки
+          pollingInterval = setInterval(async () => {
+            await loadProfile();
+            attempts--;
+            if (attempts <= 0) clearInterval(pollingInterval);
+          }, 5000);
         }
 
         function copyRefLink() {
