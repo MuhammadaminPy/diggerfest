@@ -7,6 +7,8 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- TON Connect UI Script -->
+    <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
         :root {
             --bg-primary: #0a1628;
@@ -754,6 +756,11 @@
             background: rgba(255, 82, 82, 0.2);
         }
 
+        .toast.warning {
+            border-color: #ffc107;
+            background: rgba(255, 193, 7, 0.2);
+        }
+
         /* Лимит историй */
         .daily-limit {
             background: rgba(255, 193, 7, 0.1);
@@ -772,1076 +779,81 @@
             font-size: 1.2rem;
         }
 
-        /* Скроллбар */
-        ::-webkit-scrollbar {
-            width: 6px;
+        /* Задания */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
-        ::-webkit-scrollbar-track {
-            background: transparent;
+        .task-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        ::-webkit-scrollbar-thumb {
-            background: rgba(79, 195, 247, 0.3);
-            border-radius: 3px;
+        .task-item.completed {
+            opacity: 0.6;
+            order: 999;
         }
 
-        /* Админ панель */
-        #pageAdmin {
-            display: none;
+        .task-title {
+            font-weight: 700;
         }
+
+        .task-status {
+            color: var(--text-secondary);
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Админ статистика */
         .admin-stat {
             margin-bottom: 15px;
             padding: 10px;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 8px;
         }
+
         .admin-stat label {
             font-weight: bold;
         }
+
         .admin-stat value {
             float: right;
             color: var(--accent-gold);
         }
 
-        /* Дополнительные стили для улучшения доступности */
-        button:focus {
-            outline: 2px solid var(--accent-cyan);
-            outline-offset: 2px;
-        }
-
-        input:focus {
-            outline: 2px solid var(--accent-cyan);
-            outline-offset: 2px;
-        }
-
-        /* Анимации для карточек */
-        .card {
-            transition: transform 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        /* Дополнительные стили для мобильных устройств */
-        @media (max-width: 600px) {
-            .logo {
-                font-size: 1.8rem;
-            }
-
-            .balance-amount {
-                font-size: 2rem;
-            }
-
-            .btn {
-                padding: 14px 20px;
-            }
-        }
-
-        /* Темная тема улучшения */
-        body.dark-theme {
-            --bg-primary: #000;
-            --text-primary: #fff;
-        }
-
-        /* Светлая тема (опционально) */
-        body.light-theme {
-            --bg-primary: #fff;
-            --text-primary: #000;
-        }
-
-        /* Анимация загрузки */
-        .loading-spinner {
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid var(--accent-gold);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-            display: none;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        /* Прогресс бар для баланса */
-        .balance-progress {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            height: 8px;
-            margin-top: 10px;
-        }
-
-        .balance-progress-fill {
-            background: var(--accent-gold);
-            height: 100%;
-            border-radius: 8px;
-            transition: width 0.5s ease;
-        }
-
-        /* Иконки с анимацией */
-        .icon-animated {
-            animation: bounce 1s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-
-        /* Тултипы */
-        [data-tooltip] {
-            position: relative;
-        }
-
-        [data-tooltip]::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--bg-secondary);
-            padding: 5px 10px;
-            border-radius: 4px;
-            white-space: nowrap;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-
-        [data-tooltip]:hover::after {
-            opacity: 1;
-        }
-
-        /* Формы валидация */
-        input.invalid {
-            border-color: var(--danger);
-        }
-
-        /* Социальные кнопки */
-        .social-btn {
-            background: var(--accent-blue);
-            color: white;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 5px;
-        }
-
-        /* Таблицы */
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .data-table th, .data-table td {
-            padding: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: left;
-        }
-
-        .data-table th {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        /* Пагинация */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .pagination button {
-            background: var(--bg-secondary);
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            color: white;
-            cursor: pointer;
-        }
-
-        .pagination button.active {
-            background: var(--accent-gold);
-        }
-
-        /* Аккордеон */
-        .accordion {
-            background: var(--bg-card);
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-
-        .accordion-header {
+        /* Редактирование глав */
+        .chapter-edit {
+            margin-bottom: 20px;
             padding: 15px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .accordion-content {
-            padding: 0 15px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-
-        .accordion.active .accordion-content {
-            max-height: 500px; /* Adjust as needed */
-            padding-bottom: 15px;
-        }
-
-        /* Слайдер */
-        .slider {
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-            height: 200px;
-        }
-
-        .slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-
-        .slide.active {
-            opacity: 1;
-        }
-
-        /* Галерея */
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-        }
-
-        .gallery img {
-            width: 100%;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        /* Видео плеер */
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 */
-            height: 0;
-            overflow: hidden;
-        }
-
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Чат виджет (симуляция) */
-        .chat-widget {
-            position: fixed;
-            bottom: 80px;
-            right: 20px;
-            background: var(--bg-card);
-            border-radius: 8px;
-            padding: 10px;
-            display: none;
-        }
-
-        .chat-widget.active {
-            display: block;
-        }
-
-        /* Карта (placeholder) */
-        .map-placeholder {
-            height: 300px;
-            background: #ccc;
-            border-radius: 8px;
-        }
-
-        /* График (placeholder) */
-        .chart-placeholder {
-            height: 200px;
             background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
+            border-radius: 12px;
         }
 
-        /* Футер */
-        .footer {
-            text-align: center;
-            padding: 20px;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        /* Хедер меню */
-        .header-menu {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 10px;
-        }
-
-        .header-menu-item {
-            padding: 10px;
-            cursor: pointer;
-        }
-
-        /* Сайдбар */
-        .sidebar {
-            position: fixed;
-            left: -250px;
-            top: 0;
-            width: 250px;
-            height: 100%;
-            background: var(--bg-secondary);
-            transition: left 0.3s ease;
-        }
-
-        .sidebar.active {
-            left: 0;
-        }
-
-        .sidebar-item {
-            padding: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* Поиск бар */
-        .search-bar {
+        .chapter-edit input, .chapter-edit textarea {
             width: 100%;
-            padding: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border: none;
-            border-radius: 8px;
-            color: white;
-        }
-
-        /* Тэги */
-        .tags {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-
-        .tag {
-            background: var(--accent-blue);
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-        }
-
-        /* Аватар меню */
-        .avatar-menu {
-            position: absolute;
-            top: 50px;
-            right: 20px;
-            background: var(--bg-card);
-            border-radius: 8px;
-            padding: 10px;
-            display: none;
-        }
-
-        .avatar-menu.active {
-            display: block;
-        }
-
-        /* Лайк кнопка */
-        .like-btn {
-            color: var(--text-secondary);
-            cursor: pointer;
-        }
-
-        .like-btn.liked {
-            color: var(--accent-gold);
-        }
-
-        /* Комментарии */
-        .comments-section {
-            margin-top: 20px;
-        }
-
-        .comment {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 10px;
-            border-radius: 8px;
             margin-bottom: 10px;
-        }
-
-        /* Форма комментария */
-        .comment-form {
-            display: flex;
-            gap: 10px;
-        }
-
-        .comment-input {
-            flex: 1;
             padding: 10px;
             background: rgba(255, 255, 255, 0.1);
-            border: none;
-            border-radius: 8px;
+            border: 1px solid var(--accent-blue);
             color: white;
-        }
-
-        /* Рейтинг звезды */
-        .rating-stars {
-            color: var(--accent-gold);
-        }
-
-        /* Модальное подтверждение */
-        .confirm-modal {
-            background: var(--bg-secondary);
-            padding: 20px;
             border-radius: 8px;
-            text-align: center;
         }
 
-        /* Эррор сообщение */
-        .error-message {
-            color: var(--danger);
-            font-size: 0.8rem;
-            margin-top: 5px;
-        }
-
-        /* Сукцес сообщение */
-        .success-message {
-            color: var(--success);
-            font-size: 0.8rem;
-            margin-top: 5px;
-        }
-
-        /* Лоадер оверлей */
-        .loader-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 999;
-            display: none;
-        }
-
-        .loader-overlay.active {
-            display: flex;
-        }
-
-        /* Бэйджи */
-        .badge {
-            background: var(--accent-cyan);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            margin-left: 5px;
-        }
-
-        /* Табы */
-        .tabs {
-            display: flex;
-            margin-bottom: 10px;
-        }
-
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            border-bottom: 2px solid transparent;
-        }
-
-        .tab.active {
-            border-bottom: 2px solid var(--accent-gold);
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Дропдаун */
-        .dropdown {
-            position: relative;
-        }
-
-        .dropdown-toggle {
-            padding: 10px;
-            background: var(--bg-card);
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: var(--bg-card);
-            border-radius: 4px;
-            display: none;
-        }
-
-        .dropdown.active .dropdown-menu {
-            display: block;
-        }
-
-        .dropdown-item {
-            padding: 10px;
-            cursor: pointer;
-        }
-
-        .dropdown-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        /* Радио кнопки */
-        .radio-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        .radio-label {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        /* Чекбоксы */
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        /* Свитчер */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider-switch {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
-
-        .slider-switch:before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider-switch {
-            background-color: var(--accent-gold);
-        }
-
-        input:checked + .slider-switch:before {
-            transform: translateX(26px);
-        }
-
-        /* Прогресс круг */
-        .progress-circle {
-            position: relative;
-            width: 100px;
+        .chapter-edit textarea {
             height: 100px;
         }
-
-        .progress-circle svg {
-            transform: rotate(-90deg);
-        }
-
-        .progress-circle-circle {
-            fill: none;
-            stroke: var(--accent-gold);
-            stroke-width: 10;
-            stroke-dasharray: 314;
-            stroke-dashoffset: 314;
-            transition: stroke-dashoffset 0.5s ease;
-        }
-
-        .progress-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 1.2rem;
-        }
-
-        /* Анимация текста */
-        .animated-text {
-            animation: colorChange 5s infinite;
-        }
-
-        @keyframes colorChange {
-            0% { color: var(--accent-gold); }
-            50% { color: var(--accent-cyan); }
-            100% { color: var(--accent-gold); }
-        }
-
-        /* Партиклы (дополнительно) */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .particle {
-            position: absolute;
-            background: var(--accent-cyan);
-            border-radius: 50%;
-            animation: particleMove 10s linear infinite;
-        }
-
-        @keyframes particleMove {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-100vh); opacity: 0; }
-        }
-
-        /* И многое другое... (добавляем строки для длины) */
-        .extra-class-1 { color: red; }
-        .extra-class-2 { color: blue; }
-        .extra-class-3 { color: green; }
-        .extra-class-4 { color: yellow; }
-        .extra-class-5 { color: purple; }
-        .extra-class-6 { color: orange; }
-        .extra-class-7 { color: pink; }
-        .extra-class-8 { color: brown; }
-        .extra-class-9 { color: gray; }
-        .extra-class-10 { color: cyan; }
-        .extra-class-11 { color: magenta; }
-        .extra-class-12 { color: lime; }
-        .extra-class-13 { color: teal; }
-        .extra-class-14 { color: indigo; }
-        .extra-class-15 { color: violet; }
-        .extra-class-16 { color: olive; }
-        .extra-class-17 { color: navy; }
-        .extra-class-18 { color: maroon; }
-        .extra-class-19 { color: silver; }
-        .extra-class-20 { color: gold; }
-        .extra-class-21 { font-size: 10px; }
-        .extra-class-22 { font-size: 12px; }
-        .extra-class-23 { font-size: 14px; }
-        .extra-class-24 { font-size: 16px; }
-        .extra-class-25 { font-size: 18px; }
-        .extra-class-26 { font-size: 20px; }
-        .extra-class-27 { font-size: 22px; }
-        .extra-class-28 { font-size: 24px; }
-        .extra-class-29 { font-size: 26px; }
-        .extra-class-30 { font-size: 28px; }
-        .extra-class-31 { font-size: 30px; }
-        .extra-class-32 { font-size: 32px; }
-        .extra-class-33 { font-size: 34px; }
-        .extra-class-34 { font-size: 36px; }
-        .extra-class-35 { font-size: 38px; }
-        .extra-class-36 { font-size: 40px; }
-        .extra-class-37 { font-size: 42px; }
-        .extra-class-38 { font-size: 44px; }
-        .extra-class-39 { font-size: 46px; }
-        .extra-class-40 { font-size: 48px; }
-        .extra-class-41 { padding: 5px; }
-        .extra-class-42 { padding: 10px; }
-        .extra-class-43 { padding: 15px; }
-        .extra-class-44 { padding: 20px; }
-        .extra-class-45 { padding: 25px; }
-        .extra-class-46 { padding: 30px; }
-        .extra-class-47 { padding: 35px; }
-        .extra-class-48 { padding: 40px; }
-        .extra-class-49 { padding: 45px; }
-        .extra-class-50 { padding: 50px; }
-        .extra-class-51 { margin: 5px; }
-        .extra-class-52 { margin: 10px; }
-        .extra-class-53 { margin: 15px; }
-        .extra-class-54 { margin: 20px; }
-        .extra-class-55 { margin: 25px; }
-        .extra-class-56 { margin: 30px; }
-        .extra-class-57 { margin: 35px; }
-        .extra-class-58 { margin: 40px; }
-        .extra-class-59 { margin: 45px; }
-        .extra-class-60 { margin: 50px; }
-        .extra-class-61 { border-radius: 5px; }
-        .extra-class-62 { border-radius: 10px; }
-        .extra-class-63 { border-radius: 15px; }
-        .extra-class-64 { border-radius: 20px; }
-        .extra-class-65 { border-radius: 25px; }
-        .extra-class-66 { border-radius: 30px; }
-        .extra-class-67 { border-radius: 35px; }
-        .extra-class-68 { border-radius: 40px; }
-        .extra-class-69 { border-radius: 45px; }
-        .extra-class-70 { border-radius: 50px; }
-        .extra-class-71 { opacity: 0.1; }
-        .extra-class-72 { opacity: 0.2; }
-        .extra-class-73 { opacity: 0.3; }
-        .extra-class-74 { opacity: 0.4; }
-        .extra-class-75 { opacity: 0.5; }
-        .extra-class-76 { opacity: 0.6; }
-        .extra-class-77 { opacity: 0.7; }
-        .extra-class-78 { opacity: 0.8; }
-        .extra-class-79 { opacity: 0.9; }
-        .extra-class-80 { opacity: 1.0; }
-        .extra-class-81 { transform: scale(0.9); }
-        .extra-class-82 { transform: scale(1.0); }
-        .extra-class-83 { transform: scale(1.1); }
-        .extra-class-84 { transform: scale(1.2); }
-        .extra-class-85 { transform: scale(1.3); }
-        .extra-class-86 { transform: scale(1.4); }
-        .extra-class-87 { transform: scale(1.5); }
-        .extra-class-88 { transform: scale(1.6); }
-        .extra-class-89 { transform: scale(1.7); }
-        .extra-class-90 { transform: scale(1.8); }
-        .extra-class-91 { box-shadow: 0 0 5px rgba(0,0,0,0.1); }
-        .extra-class-92 { box-shadow: 0 0 10px rgba(0,0,0,0.2); }
-        .extra-class-93 { box-shadow: 0 0 15px rgba(0,0,0,0.3); }
-        .extra-class-94 { box-shadow: 0 0 20px rgba(0,0,0,0.4); }
-        .extra-class-95 { box-shadow: 0 0 25px rgba(0,0,0,0.5); }
-        .extra-class-96 { box-shadow: 0 0 30px rgba(0,0,0,0.6); }
-        .extra-class-97 { box-shadow: 0 0 35px rgba(0,0,0,0.7); }
-        .extra-class-98 { box-shadow: 0 0 40px rgba(0,0,0,0.8); }
-        .extra-class-99 { box-shadow: 0 0 45px rgba(0,0,0,0.9); }
-        .extra-class-100 { box-shadow: 0 0 50px rgba(0,0,0,1.0); }
-        .extra-class-101 { transition: all 0.1s ease; }
-        .extra-class-102 { transition: all 0.2s ease; }
-        .extra-class-103 { transition: all 0.3s ease; }
-        .extra-class-104 { transition: all 0.4s ease; }
-        .extra-class-105 { transition: all 0.5s ease; }
-        .extra-class-106 { transition: all 0.6s ease; }
-        .extra-class-107 { transition: all 0.7s ease; }
-        .extra-class-108 { transition: all 0.8s ease; }
-        .extra-class-109 { transition: all 0.9s ease; }
-        .extra-class-110 { transition: all 1.0s ease; }
-        .extra-class-111 { animation-duration: 1s; }
-        .extra-class-112 { animation-duration: 2s; }
-        .extra-class-113 { animation-duration: 3s; }
-        .extra-class-114 { animation-duration: 4s; }
-        .extra-class-115 { animation-duration: 5s; }
-        .extra-class-116 { animation-duration: 6s; }
-        .extra-class-117 { animation-duration: 7s; }
-        .extra-class-118 { animation-duration: 8s; }
-        .extra-class-119 { animation-duration: 9s; }
-        .extra-class-120 { animation-duration: 10s; }
-        .extra-class-121 { display: block; }
-        .extra-class-122 { display: inline; }
-        .extra-class-123 { display: inline-block; }
-        .extra-class-124 { display: flex; }
-        .extra-class-125 { display: grid; }
-        .extra-class-126 { display: none; }
-        .extra-class-127 { flex-direction: row; }
-        .extra-class-128 { flex-direction: column; }
-        .extra-class-129 { justify-content: center; }
-        .extra-class-130 { justify-content: space-between; }
-        .extra-class-131 { align-items: center; }
-        .extra-class-132 { gap: 5px; }
-        .extra-class-133 { gap: 10px; }
-        .extra-class-134 { gap: 15px; }
-        .extra-class-135 { gap: 20px; }
-        .extra-class-136 { grid-template-columns: repeat(2, 1fr); }
-        .extra-class-137 { grid-template-columns: repeat(3, 1fr); }
-        .extra-class-138 { grid-template-columns: repeat(4, 1fr); }
-        .extra-class-139 { position: relative; }
-        .extra-class-140 { position: absolute; }
-        .extra-class-141 { position: fixed; }
-        .extra-class-142 { position: sticky; }
-        .extra-class-143 { z-index: 1; }
-        .extra-class-144 { z-index: 10; }
-        .extra-class-145 { z-index: 100; }
-        .extra-class-146 { overflow: hidden; }
-        .extra-class-147 { overflow: auto; }
-        .extra-class-148 { overflow: scroll; }
-        .extra-class-149 { text-align: left; }
-        .extra-class-150 { text-align: center; }
-        .extra-class-151 { text-align: right; }
-        .extra-class-152 { font-weight: normal; }
-        .extra-class-153 { font-weight: bold; }
-        .extra-class-154 { font-style: italic; }
-        .extra-class-155 { text-decoration: underline; }
-        .extra-class-156 { text-decoration: none; }
-        .extra-class-157 { line-height: 1; }
-        .extra-class-158 { line-height: 1.5; }
-        .extra-class-159 { line-height: 2; }
-        .extra-class-160 { letter-spacing: 1px; }
-        .extra-class-161 { letter-spacing: 2px; }
-        .extra-class-162 { word-spacing: 1px; }
-        .extra-class-163 { word-spacing: 2px; }
-        .extra-class-164 { white-space: nowrap; }
-        .extra-class-165 { white-space: normal; }
-        .extra-class-166 { cursor: pointer; }
-        .extra-class-167 { cursor: default; }
-        .extra-class-168 { user-select: none; }
-        .extra-class-169 { pointer-events: none; }
-        .extra-class-170 { border: 1px solid; }
-        .extra-class-171 { border: 2px solid; }
-        .extra-class-172 { border: 3px solid; }
-        .extra-class-173 { border-style: dashed; }
-        .extra-class-174 { border-style: dotted; }
-        .extra-class-175 { background-color: transparent; }
-        .extra-class-176 { background-color: rgba(0,0,0,0.5); }
-        .extra-class-177 { background-image: url('image.jpg'); }
-        .extra-class-178 { background-size: cover; }
-        .extra-class-179 { background-position: center; }
-        .extra-class-180 { background-repeat: no-repeat; }
-        .extra-class-181 { width: 100%; }
-        .extra-class-182 { width: 50%; }
-        .extra-class-183 { width: 25%; }
-        .extra-class-184 { height: 100%; }
-        .extra-class-185 { height: 50%; }
-        .extra-class-186 { height: 25%; }
-        .extra-class-187 { max-width: 100%; }
-        .extra-class-188 { max-height: 100%; }
-        .extra-class-189 { min-width: 100px; }
-        .extra-class-190 { min-height: 100px; }
-        .extra-class-191 { top: 0; }
-        .extra-class-192 { bottom: 0; }
-        .extra-class-193 { left: 0; }
-        .extra-class-194 { right: 0; }
-        .extra-class-195 { float: left; }
-        .extra-class-196 { float: right; }
-        .extra-class-197 { clear: both; }
-        .extra-class-198 { visibility: hidden; }
-        .extra-class-199 { visibility: visible; }
-        .extra-class-200 { object-fit: cover; }
-        /* Продолжаем добавлять для достижения >1500 строк */
-        .extra-class-201 { color: #000; }
-        .extra-class-202 { color: #fff; }
-        .extra-class-203 { color: #f00; }
-        .extra-class-204 { color: #0f0; }
-        .extra-class-205 { color: #00f; }
-        .extra-class-206 { color: #ff0; }
-        .extra-class-207 { color: #0ff; }
-        .extra-class-208 { color: #f0f; }
-        .extra-class-209 { color: #888; }
-        .extra-class-210 { color: #333; }
-        .extra-class-211 { font-family: Arial; }
-        .extra-class-212 { font-family: Helvetica; }
-        .extra-class-213 { font-family: sans-serif; }
-        .extra-class-214 { font-family: serif; }
-        .extra-class-215 { font-family: monospace; }
-        .extra-class-216 { text-transform: uppercase; }
-        .extra-class-217 { text-transform: lowercase; }
-        .extra-class-218 { text-transform: capitalize; }
-        .extra-class-219 { font-variant: small-caps; }
-        .extra-class-220 { text-shadow: 1px 1px 2px black; }
-        .extra-class-221 { list-style: none; }
-        .extra-class-222 { list-style-type: disc; }
-        .extra-class-223 { list-style-type: circle; }
-        .extra-class-224 { list-style-type: square; }
-        .extra-class-225 { list-style-position: inside; }
-        .extra-class-226 { table-layout: fixed; }
-        .extra-class-227 { border-collapse: collapse; }
-        .extra-class-228 { border-spacing: 5px; }
-        .extra-class-229 { caption-side: bottom; }
-        .extra-class-230 { vertical-align: top; }
-        .extra-class-231 { vertical-align: middle; }
-        .extra-class-232 { vertical-align: bottom; }
-        .extra-class-233 { content: " "; }
-        .extra-class-234 { counter-reset: section; }
-        .extra-class-235 { counter-increment: section; }
-        .extra-class-236 { quotes: "“" "”" "‘" "’"; }
-        .extra-class-237 { outline: none; }
-        .extra-class-238 { resize: none; }
-        .extra-class-239 { box-sizing: border-box; }
-        .extra-class-240 { filter: grayscale(100%); }
-        .extra-class-241 { filter: blur(5px); }
-        .extra-class-242 { filter: brightness(150%); }
-        .extra-class-243 { filter: contrast(200%); }
-        .extra-class-244 { filter: drop-shadow(5px 5px 5px black); }
-        .extra-class-245 { filter: hue-rotate(90deg); }
-        .extra-class-246 { filter: invert(100%); }
-        .extra-class-247 { filter: opacity(50%); }
-        .extra-class-248 { filter: saturate(200%); }
-        .extra-class-249 { filter: sepia(100%); }
-        .extra-class-250 { will-change: transform; }
-        .extra-class-251 { perspective: 1000px; }
-        .extra-class-252 { transform-style: preserve-3d; }
-        .extra-class-253 { backface-visibility: hidden; }
-        .extra-class-254 { animation-fill-mode: forwards; }
-        .extra-class-255 { animation-timing-function: ease-in-out; }
-        .extra-class-256 { animation-iteration-count: infinite; }
-        .extra-class-257 { animation-play-state: paused; }
-        .extra-class-258 { animation-delay: 1s; }
-        .extra-class-259 { column-count: 2; }
-        .extra-class-260 { column-gap: 20px; }
-        .extra-class-261 { column-rule: 1px solid black; }
-        .extra-class-262 { hyphens: auto; }
-        .extra-class-263 { tab-size: 4; }
-        .extra-class-264 { hanging-punctuation: first; }
-        .extra-class-265 { writing-mode: vertical-rl; }
-        .extra-class-266 { text-orientation: upright; }
-        .extra-class-267 { paint-order: stroke; }
-        .extra-class-268 { shape-outside: circle(50%); }
-        .extra-class-269 { clip-path: circle(50%); }
-        .extra-class-270 { mask-image: url(mask.png); }
-        .extra-class-271 { isolation: isolate; }
-        .extra-class-272 { mix-blend-mode: multiply; }
-        .extra-class-273 { background-blend-mode: multiply; }
-        .extra-class-274 { object-position: top; }
-        .extra-class-275 { scroll-behavior: smooth; }
-        .extra-class-276 { scroll-snap-type: y mandatory; }
-        .extra-class-277 { scroll-padding: 50px; }
-        .extra-class-278 { touch-action: none; }
-        .extra-class-279 { user-zoom: fixed; }
-        .extra-class-280 { contain: paint; }
-        .extra-class-281 { content-visibility: auto; }
-        .extra-class-282 { aspect-ratio: 16/9; }
-        .extra-class-283 { forced-color-adjust: auto; }
-        .extra-class-284 { accent-color: var(--accent-gold); }
-        .extra-class-285 { color-scheme: dark; }
-        .extra-class-286 { print-color-adjust: economy; }
-        .extra-class-287 { math-style: normal; }
-        .extra-class-288 { text-combine-upright: all; }
-        .extra-class-289 { ruby-position: over; }
-        .extra-class-290 { text-emphasis: filled; }
-        .extra-class-291 { text-underline-offset: 2px; }
-        .extra-class-292 { font-optical-sizing: auto; }
-        .extra-class-293 { font-variation-settings: normal; }
-        .extra-class-294 { font-feature-settings: normal; }
-        .extra-class-295 { font-kerning: auto; }
-        .extra-class-296 { font-synthesis: none; }
-        .extra-class-297 { font-variant-ligatures: none; }
-        .extra-class-298 { font-variant-numeric: oldstyle-nums; }
-        .extra-class-299 { font-variant-east-asian: ruby; }
-        .extra-class-300 { font-language-override: normal; }
-        /* Продолжаем добавлять для достижения >1500 строк */
-        .extra-class-301 { display: table; }
-        .extra-class-302 { display: table-cell; }
-        .extra-class-303 { display: table-row; }
-        .extra-class-304 { caption-side: top; }
-        .extra-class-305 { empty-cells: show; }
-        .extra-class-306 { table-layout: auto; }
-        .extra-class-307 { border-collapse: separate; }
-        .extra-class-308 { border-spacing: 0; }
-        .extra-class-309 { vertical-align: baseline; }
-        .extra-class-310 { list-style-image: url(image.png); }
-        .extra-class-311 { counter-increment: none; }
-        .extra-class-312 { counter-reset: none; }
-        .extra-class-313 { page-break-after: avoid; }
-        .extra-class-314 { page-break-before: always; }
-        .extra-class-315 { page-break-inside: auto; }
-        .extra-class-316 { orphans: 2; }
-        .extra-class-317 { widows: 2; }
-        .extra-class-318 { quotes: none; }
-        .extra-class-319 { image-orientation: flip; }
-        .extra-class-320 { image-resolution: 300dpi; }
-        .extra-class-321 { object-fit: contain; }
-        .extra-class-322 { object-position: bottom; }
-        .extra-class-323 { marks: crop; }
-        .extra-class-324 { bleed: 6pt; }
-        .extra-class-325 { size: a4; }
-        .extra-class-326 { break-after: page; }
-        .extra-class-327 { break-before: page; }
-        .extra-class-328 { break-inside: avoid; }
-        .extra-class-329 { max-inline-size: 100%; }
-        .extra-class-330 { min-inline-size: 50px; }
-        .extra-class-331 { inline-size: auto; }
-        .extra-class-332 { block-size: auto; }
-        .extra-class-333 { max-block-size: 100%; }
-        .extra-class-334 { min-block-size: 50px; }
-        .extra-class-335 { margin-block-start: 10px; }
-        .extra-class-336 { margin-block-end: 10px; }
-        .extra-class-337 { margin-inline-start: 10px; }
-        .extra-class-338 { margin-inline-end: 10px; }
-        .extra-class-339 { padding-block-start: 10px; }
-        .extra-class-340 { padding-block-end: 10px; }
-        .extra-class-341 { padding-inline-start: 10px; }
-        .extra-class-342 { padding-inline-end: 10px; }
-        .extra-class-343 { inset: 0; }
-        .extra-class-344 { inset-block-start: 0; }
-        .extra-class-345 { inset-block-end: 0; }
-        .extra-class-346 { inset-inline-start: 0; }
-        .extra-class-347 { inset-inline-end: 0; }
-        .extra-class-348 { border-block-start: 1px solid; }
-        .extra-class-349 { border-block-end: 1px solid; }
-        .extra-class-350 { border-inline-start: 1px solid; }
-        .extra-class-351 { border-inline-end: 1px solid; }
-        .extra-class-352 { border-block-start-color: black; }
-        .extra-class-353 { border-block-end-color: black; }
-        .extra-class-354 { border-inline-start-color: black; }
-        .extra-class-355 { border-inline-end-color: black; }
-        .extra-class-356 { border-block-start-style: solid; }
-        .extra-class-357 { border-block-end-style: solid; }
-        .extra-class-358 { border-inline-start-style: solid; }
-        .extra-class-359 { border-inline-end-style: solid; }
-        .extra-class-360 { border-block-start-width: 1px; }
-        .extra-class-361 { border-block-end-width: 1px; }
-        .extra-class-362 { border-inline-start-width: 1px; }
-        .extra-class-363 { border-inline-end-width: 1px; }
-        .extra-class-364 { border-start-start-radius: 5px; }
-        .extra-class-365 { border-start-end-radius: 5px; }
-        .extra-class-366 { border-end-start-radius: 5px; }
-        .extra-class-367 { border-end-end-radius: 5px; }
-        .extra-class-368 { overflow-block: scroll; }
-        .extra-class-369 { overflow-inline: auto; }
-        .extra-class-370 { scroll-margin: 10px; }
-        .extra-class-371 { scroll-margin-block-start: 10px; }
-        .extra-class-372 { scroll-margin-block-end: 10px; }
-        .extra-class-373 { scroll-margin-inline-start: 10px; }
-        .extra-class-374 { scroll-margin-inline-end: 10px; }
-        .extra-class-375 { scroll-padding-block-start: 10px; }
-        .extra-class-376 { scroll-padding-block-end: 10px; }
-        .extra-class-377 { scroll-padding-inline-start: 10px; }
-        .extra-class-378 { scroll-padding-inline-end: 10px; }
-        .extra-class-379 { scroll-snap-align: start; }
-        .extra-class-380 { scroll-snap-stop: always; }
-        .extra-class-381 { text-align-last: center; }
-        .extra-class-382 { text-justify: inter-word; }
-        .extra-class-383 { text-underline-position: under; }
-        .extra-class-384 { text-decoration-skip-ink: auto; }
-        .extra-class-385 { text-decoration-thickness: 2px; }
-        .extra-class-386 { text-emphasis-position: over; }
-        .extra-class-387 { text-shadow: 2px 2px 4px black; }
-        .extra-class-388 { word-break: break-word; }
-        .extra-class-389 { overflow-wrap: break-word; }
-        .extra-class-390 { resize: both; }
-        .extra-class-391 { caret-color: red; }
-        .extra-class-392 { cursor: zoom-in; }
-        .extra-class-393 { pointer-events: auto; }
-        .extra-class-394 { touch-action: pan-x; }
-        .extra-class-395 { user-select: text; }
-        .extra-class-396 { visibility: collapse; }
-        .extra-class-397 { white-space: pre; }
-        .extra-class-398 { word-spacing: normal; }
-        .extra-class-399 { writing-mode: horizontal-tb; }
-        .extra-class-400 { zoom: 1; }
-        /* Это должно хватить, чтобы общее количество строк в файле превысило 1500, включая HTML и JS */
     </style>
 </head>
 <body>
-    <!-- Новогодняя музыка -->
-    <audio autoplay loop>
-        <source src="https://github.com/MuhammadaminPy/audio/raw/refs/heads/main/Pragmatic%20Play.mp3" type="audio/mpeg"> 
-    </audio>
-
     <!-- Звезды и снег -->
     <div class="stars-container" id="starsContainer"></div>
 
@@ -1915,6 +927,14 @@
             </div>
         </div>
 
+        <!-- Задания -->
+        <div class="page" id="pageTasks">
+            <div class="card">
+                <h3 class="card-title">Доступные задания</h3>
+                <div class="task-list" id="taskList"></div>
+            </div>
+        </div>
+
         <!-- История -->
         <div class="page" id="pageHistory">
             <div class="daily-limit">
@@ -1949,6 +969,13 @@
                     <value id="adminFirstCompleter">Никто</value>
                 </div>
             </div>
+            <button class="btn btn-gold" onclick="openAddTaskModal()">
+                <i class="fas fa-plus"></i> Добавить задание
+            </button>
+            <div class="card">
+                <h3 class="card-title">Редактировать главы</h3>
+                <div id="adminChaptersList"></div>
+            </div>
         </div>
     </main>
 
@@ -1961,6 +988,10 @@
         <button class="nav-item" onclick="showPage('Top')">
             <i class="fas fa-trophy"></i>
             <span>ТОП</span>
+        </button>
+        <button class="nav-item" onclick="showPage('Tasks')">
+            <i class="fas fa-tasks"></i>
+            <span>Задания</span>
         </button>
         <button class="nav-item" onclick="showPage('History')">
             <i class="fas fa-book"></i>
@@ -1979,14 +1010,18 @@
             </div>
             <div class="modal-body">
                 <div class="topup-form">
+                    <select id="topupCurrency">
+                        <option value="stars">Stars</option>
+                        <option value="ton">TON</option>
+                    </select>
                     <div class="input-group">
                         <i class="fas fa-star"></i>
-                        <input type="number" id="topupAmount" placeholder="Количество Stars" min="29" value="29">
+                        <input type="number" id="topupAmount" placeholder="Количество" min="29" value="29">
                     </div>
-                    <p class="input-hint">Минимум: 29 Stars</p>
+                    <p class="input-hint" id="topupHint">Минимум: 29 Stars</p>
                     <button class="btn btn-gold" onclick="processTopup()">
                         <i class="fas fa-bolt"></i>
-                        Оплатить через Telegram
+                        Оплатить
                     </button>
                 </div>
             </div>
@@ -2027,9 +1062,38 @@
                 <p style="text-align: center; margin-bottom: 20px;">
                     Открыть <strong id="buyChapterName">Главу 1</strong> за <span id="buyChapterPrice" style="color: var(--accent-gold); font-weight: bold;">29 ⭐</span>?
                 </p>
+                <select id="buyCurrency">
+                    <option value="stars">Stars</option>
+                    <option value="ton">TON</option>
+                </select>
                 <button class="btn btn-gold" onclick="confirmBuyChapter()">
                     <i class="fas fa-unlock"></i>
                     Открыть
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно добавления задания (для админа) -->
+    <div class="modal-overlay" id="addTaskModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Добавить задание</h3>
+                <button class="modal-close" onclick="closeModal('addTaskModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <select id="taskType">
+                    <option value="channel">Подписка на канал</option>
+                    <option value="bot">Переход на бота</option>
+                </select>
+                <input type="text" id="taskTitle" placeholder="Название задания">
+                <input type="text" id="taskLink" placeholder="Ссылка (t.me/...)">
+                <input type="number" id="taskReward" placeholder="Награда (stars)" min="1">
+                <input type="number" id="taskMaxActivations" placeholder="Макс. активаций" min="1">
+                <button class="btn btn-gold" onclick="addTask()">
+                    <i class="fas fa-plus"></i> Добавить
                 </button>
             </div>
         </div>
@@ -2042,147 +1106,14 @@
         // Конфигурация
         const BOT_USERNAME = 'diggerfest_bot'; 
         const ADMIN_ID = 1027715401; 
+        const RECEIVER_ADDRESS = 'UQBIYfPSgJN7n3eoYpkRqR1jnpQhLnwojPLKywyvr2sTE2HZ'; // Updated from bot.py
+        const STARS_PER_TON = 100; // Курс: 1 TON = 100 Stars (для пополнения)
+        const tonConnectUI = new TONConnectUI({
+            manifestUrl: 'https://your-app-url.com/tonconnect-manifest.json' // Замените на реальный URL манифеста
+        });
 
-        // Данные истории
-        const storyChapters = [
-            {
-                id: 1,
-                title: "Начало пути",
-                price: 29,
-                content: `В далёком 2017 году, когда мир криптовалют только начинал свой путь к славе, родился необычный персонаж — Просто Digger. Он был простым программистом из Санкт-Петербурга, который мечтал изменить мир.
-
-Однажды, листая новости в Telegram, он наткнулся на странное сообщение о новом блокчейне — TON. "The Open Network" — звучало загадочно и многообещающе. Павел Дуров, создатель Telegram, объявил о революционном проекте.
-
-Digger не мог поверить своим глазам. Это был шанс! Он сразу понял, что должен быть частью этой истории. В ту ночь он не спал — изучал документацию, смотрел видео, читал whitepaper...`,
-                easterWord: "КОПАЙ"
-            },
-            {
-                id: 2,
-                title: "Встреча с Дуровым",
-                price: 29,
-                content: `Прошло несколько месяцев. Digger стал одним из первых майнеров тестовой сети TON. Его узел работал 24/7, добывая тестовые токены.
-
-На одной из закрытых конференций в Дубае судьба свела его с самим Павлом Дуровым. Высокий, в своём фирменном чёрном, Павел говорил о децентрализации и свободе.
-
-"Ты тот самый Digger?" — спросил Павел, увидев его бейдж. "Твой узел показывает лучшие результаты."
-
-Digger не мог поверить. Сам создатель Telegram знает о нём! Они проговорили несколько часов о будущем блокчейна, о мечтах и о том, как изменить финансовую систему мира...`,
-                easterWord: "ГЛУБЖЕ"
-            },
-            {
-                id: 3,
-                title: "Тёмные времена",
-                price: 29,
-                content: `2020 год принёс неожиданный удар. SEC, американский регулятор, заблокировал TON. Миллиарды инвестиций оказались заморожены. Павел объявил о закрытии проекта.
-
-Digger был раздавлен. Месяцы работы, бессонные ночи — всё казалось напрасным. Многие разработчики ушли, но не он.
-
-"Это не конец," — написал он в своём блоге. "Это только начало. Идею невозможно убить."
-
-Он продолжал работать над своими инструментами, совершенствовал код, общался с оставшимися энтузиастами. Они создали сообщество "Free TON", позже ставшее основой для возрождения...`,
-                easterWord: "И"
-            },
-            {
-                id: 4,
-                title: "Возрождение",
-                price: 29,
-                content: `2021 год. Слухи о возвращении TON становились всё громче. Сообщество не сдавалось. Появились новые разработчики, новые идеи.
-
-Digger стал одним из ключевых участников движения. Его инструменты для майнинга использовали тысячи людей по всему миру. Он не брал денег — только донаты в криптовалюте.
-
-Когда официально запустился TON Foundation, Digger получил приглашение стать одним из первых валидаторов. Его мечта сбывалась!
-
-"Мы сделали это вместе," — написал он в своём канале. "Децентрализация победила."`,
-                easterWord: "ТЫ"
-            },
-            {
-                id: 5,
-                title: "Первый миллион",
-                price: 99,
-                content: `К концу 2022 года цена TON начала расти. Digger, который держал свои монеты с самого начала, внезапно стал миллионером.
-
-Но деньги не изменили его. Он продолжал жить в своей маленькой квартире, писать код и помогать новичкам в сообществе. "Деньги — это инструмент, не цель," — говорил он.
-
-На заработанные средства он запустил образовательную платформу для изучения блокчейна. Тысячи людей получили бесплатный доступ к знаниям.
-
-Его история вдохновляла. Журналисты называли его "Робин Гудом криптомира"...`,
-                easterWord: "НАЙДЁШЬ"
-            },
-            {
-                id: 6,
-                title: "Telegram Mini Apps",
-                price: 99,
-                content: `2023 год стал переломным. Telegram запустил Mini Apps — возможность создавать приложения прямо внутри мессенджера с интеграцией TON.
-
-Digger увидел новую возможность. За три недели без сна он создал первое популярное Mini App для майнинга — "Просто DIGGER". Простой интерфейс, честные выплаты, никаких скрытых условий.
-
-Приложение стало вирусным. Миллионы пользователей присоединились за первый месяц. Digger стал легендой в мире Telegram.
-
-"Я просто сделал то, что любил," — скромно отвечал он на вопросы журналистов...`,
-                easterWord: "СВОЙ"
-            },
-            {
-                id: 7,
-                title: "Враги в тени",
-                price: 99,
-                content: `Успех привлёк не только друзей. Конкуренты начали атаки на серверы Digger'а. Хакеры пытались взломать систему, распространялись фейковые новости.
-
-Один из атакующих оказался бывшим партнёром, который хотел украсть код и запустить свой проект. Digger узнал об этом случайно, просматривая логи сервера.
-
-Вместо того чтобы мстить, он публично простил предателя и опубликовал весь код в open source. "Если моя идея хороша — пусть её используют все," — написал он.
-
-Этот поступок сделал его ещё более уважаемым в сообществе...`,
-                easterWord: "ПУТЬ"
-            },
-            {
-                id: 8,
-                title: "Глобальное признание",
-                price: 99,
-                content: `2024 год. Digger получил приглашение выступить на крупнейшей криптоконференции в Сингапуре. Впервые он вышел из тени анонимности.
-
-На сцене стоял обычный парень в простой футболке. Никаких дорогих костюмов или понтов. Его речь о децентрализации и честности в криптомире тронула тысячи людей.
-
-"Я не гений и не визионер," — говорил он. "Я просто копатель, который не сдался, когда было тяжело."
-
-После выступления к нему подошёл сам Виталик Бутерин и пожал руку: "Ты вдохновляешь."`,
-                easterWord: "К"
-            },
-            {
-                id: 9,
-                title: "Новый вызов",
-                price: 199,
-                content: `Но жизнь готовила новое испытание. Глобальный кризис 2024 года обрушил рынки. Многие криптопроекты закрылись. Пользователи "Просто DIGGER" начали паниковать.
-
-Digger собрал экстренный стрим. "Я обещаю: каждый получит свои средства. Мы не обанкротимся."
-
-Он продал часть своих личных активов, чтобы поддержать платформу. Это был огромный риск, но он не мог предать доверие пользователей.
-
-Три месяца борьбы, бессонных ночей и сложных решений. Но платформа выстояла...`,
-                easterWord: "ЗВЁЗДАМ"
-            },
-            {
-                id: 10,
-                title: "Философия копателя",
-                price: 199,
-                content: `Digger часто делился своей философией: "Копай не золото, а знания. Блокчейн — это не про деньги, а про свободу."
-
-Он написал книгу "Просто Копай", которая стала бестселлером в криптосообществе. В ней он рассказал о своём пути, ошибках и уроках.
-
-"Каждый может стать Digger'ом," — писал он. "Нужны только упорство и вера в децентрализацию."`,
-                easterWord: "В"
-            },
-            {
-                id: 11,
-                title: "Наследие",
-                price: 199,
-                content: `Сегодня, в 2025 году, Просто Digger продолжает своё дело. Его приложение используется миллионами, а сообщество TON растёт каждый день.
-
-Павел Дуров иногда шутит: "Без таких, как Digger, TON не был бы таким, какой он есть."
-
-Наследие Digger'а — это не токены или деньги. Это идея, что один человек может изменить мир, просто копая глубже...`,
-                easterWord: "TON"
-            }
-        ];
+        // Данные истории теперь загружаются с бэкенда
+        let storyChapters = [];
 
         // Telegram Web App
         const tg = window.Telegram.WebApp;
@@ -2191,10 +1122,10 @@ Digger собрал экстренный стрим. "Я обещаю: кажд�
         const user = tg.initDataUnsafe.user || { id: 123456, first_name: 'Test User', photo_url: '' };
         const initData = tg.initData;
 
-        // Backend URL (замените на ваш реальный сервер, например, ngrok или production URL)
-        const backendUrl = 'https://quinsied-undeliberatively-kerry.ngrok-free.dev/api';
+        // Backend URL
+        const backendUrl = 'https://quinsied-undeliberately-kerry.ngrok-free.app/api';
 
-        // Локальные данные (для демо; в реальности загружать с бэкенда)
+        // Локальные данные
         let userData = {
           balance: 0,
           refLink: `https://t.me/${BOT_USERNAME}?start=ref${user.id}`,
@@ -2218,15 +1149,17 @@ Digger собрал экстренный стрим. "Я обещаю: кажд�
             await loadProfile();
           } else if (pageId === 'Top') {
             await loadTop();
+          } else if (pageId === 'Tasks') {
+            await loadTasks();
           } else if (pageId === 'History') {
             await loadHistory();
           } else if (pageId === 'Admin') {
             await loadAdmin();
+            if (user.id === ADMIN_ID) await loadAdminChapters();
           }
         }
 
         async function loadProfile() {
-          // Загрузка с бэкенда
           try {
             const response = await fetch(`${backendUrl}/user/${user.id}`, {
               headers: { 'Authorization': initData }
@@ -2252,7 +1185,6 @@ Digger собрал экстренный стрим. "Я обещаю: кажд�
           document.getElementById('refCount').textContent = userData.refCount;
           document.getElementById('refEarnings').textContent = userData.refEarnings;
           
-          // Загрузка топа с бэкенда
           try {
             const response = await fetch(`${backendUrl}/top`);
             const topUsers = await response.json();
@@ -2278,8 +1210,94 @@ Digger собрал экстренный стрим. "Я обещаю: кажд�
           }
         }
 
+        async function loadTasks() {
+          try {
+            const response = await fetch(`${backendUrl}/tasks`, {
+              headers: { 'Authorization': initData }
+            });
+            const tasks = await response.json();
+            const taskList = document.getElementById('taskList');
+            taskList.innerHTML = '';
+            tasks.sort((a, b) => a.is_completed - b.is_completed); // Completed to bottom
+            tasks.forEach(task => {
+              const item = document.createElement('div');
+              item.className = `task-item ${task.is_completed ? 'completed' : ''}`;
+              item.innerHTML = `
+                <div class="task-title">${task.title}</div>
+                <div class="task-status">Статус: ${task.is_completed ? 'Получена' : 'Не получена'}</div>
+                <div class="task-status">Награда: ${task.reward} ⭐</div>
+                <div class="task-status">Активаций: ${task.current_activations}/${task.max_activations}</div>
+                ${task.is_completed || task.current_activations >= task.max_activations ? '' : `
+                  <div class="task-actions">
+                    <button class="btn btn-primary" onclick="window.open('${task.link}', '_blank')">Перейти</button>
+                    <button class="btn btn-gold" onclick="completeTask(${task.id})">Проверить</button>
+                  </div>
+                `}
+              `;
+              taskList.appendChild(item);
+            });
+          } catch (e) {
+            console.error(e);
+            showToast('Ошибка загрузки заданий', 'error');
+          }
+        }
+
+        async function completeTask(taskId) {
+          try {
+            const response = await fetch(`${backendUrl}/complete_task`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': initData },
+              body: JSON.stringify({ taskId })
+            });
+            const data = await response.json();
+            if (data.success) {
+              showToast('Задание выполнено! Награда зачислена.', 'success');
+              await loadProfile(); // Update balance
+              await loadTasks();
+            } else {
+              showToast(data.error || 'Ошибка выполнения', 'error');
+            }
+          } catch (e) {
+            showToast('Ошибка соединения', 'error');
+          }
+        }
+
+        function openAddTaskModal() {
+          document.getElementById('addTaskModal').classList.add('active');
+        }
+
+        async function addTask() {
+          const type = document.getElementById('taskType').value;
+          const title = document.getElementById('taskTitle').value;
+          const link = document.getElementById('taskLink').value;
+          const reward = parseInt(document.getElementById('taskReward').value);
+          const max_activations = parseInt(document.getElementById('taskMaxActivations').value);
+
+          if (!title || !link || isNaN(reward) || isNaN(max_activations)) {
+            showToast('Заполните все поля', 'error');
+            return;
+          }
+
+          try {
+            const response = await fetch(`${backendUrl}/add_task`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': initData },
+              body: JSON.stringify({ type, title, link, reward, max_activations })
+            });
+            const data = await response.json();
+            if (data.success) {
+              showToast('Задание добавлено!', 'success');
+              closeModal('addTaskModal');
+              await loadTasks();
+            } else {
+              showToast(data.error || 'Ошибка добавления', 'error');
+            }
+          } catch (e) {
+            showToast('Ошибка соединения', 'error');
+          }
+        }
+
         async function loadHistory() {
-          // Загрузка разблокированных глав с бэкенда
           try {
             const response = await fetch(`${backendUrl}/unlocks/${user.id}`, {
               headers: { 'Authorization': initData }
@@ -2309,7 +1327,7 @@ Digger собрал экстренный стрим. "Я обещаю: кажд�
                 </div>
               </div>
               <div class="chapter-price">
-                ${chapter.price} <i class="fas fa-star"></i>
+                ${chapter.price} <i class="fas fa-star"></i> / ${chapter.tonPrice} TON
               </div>
             `;
             div.onclick = () => {
@@ -2346,8 +1364,77 @@ Digger собрал экстренный стрим. "Я обещаю: кажд�
           }
         }
 
+        async function loadAdminChapters() {
+          try {
+            const response = await fetch(`${backendUrl}/chapters`, {
+              headers: { 'Authorization': initData }
+            });
+            const chapters = await response.json();
+            const list = document.getElementById('adminChaptersList');
+            list.innerHTML = '';
+            chapters.forEach(ch => {
+              const div = document.createElement('div');
+              div.className = 'chapter-edit';
+              div.innerHTML = `
+                <h4>Глава ${ch.id}: ${ch.title}</h4>
+                <input type="number" id="price_${ch.id}" value="${ch.price}" placeholder="Цена (stars)">
+                <input type="number" id="tonPrice_${ch.id}" value="${ch.tonPrice}" placeholder="Цена (TON)" step="0.01">
+                <textarea id="content_${ch.id}" placeholder="Содержание">${ch.content}</textarea>
+                <input type="text" id="easter_${ch.id}" value="${ch.easterWord}" placeholder="Пасхальное слово">
+                <button class="btn btn-primary" onclick="updateChapter(${ch.id})">Сохранить</button>
+              `;
+              list.appendChild(div);
+            });
+          } catch (e) {
+            showToast('Ошибка загрузки глав', 'error');
+          }
+        }
+
+        async function updateChapter(chId) {
+          const price = parseInt(document.getElementById(`price_${chId}`).value);
+          const tonPrice = parseFloat(document.getElementById(`tonPrice_${chId}`).value);
+          const content = document.getElementById(`content_${chId}`).value;
+          const easter = document.getElementById(`easter_${chId}`).value;
+
+          try {
+            const response = await fetch(`${backendUrl}/update_chapter`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': initData },
+              body: JSON.stringify({ id: chId, price, ton_price: tonPrice, content, easter_word: easter })
+            });
+            const data = await response.json();
+            if (data.success) {
+              showToast('Глава обновлена!', 'success');
+              await loadHistory(); // Reload if needed
+            } else {
+              showToast(data.error || 'Ошибка обновления', 'error');
+            }
+          } catch (e) {
+            showToast('Ошибка соединения', 'error');
+          }
+        }
+
         function openTopupModal() {
           document.getElementById('topupModal').classList.add('active');
+          document.getElementById('topupCurrency').addEventListener('change', updateTopupForm);
+          updateTopupForm();
+        }
+
+        function updateTopupForm() {
+          const currency = document.getElementById('topupCurrency').value;
+          const input = document.getElementById('topupAmount');
+          const hint = document.getElementById('topupHint');
+          if (currency === 'ton') {
+            input.min = 1;
+            input.value = 1;
+            input.placeholder = 'Количество TON';
+            hint.textContent = 'Минимум: 1 TON';
+          } else {
+            input.min = 29;
+            input.value = 29;
+            input.placeholder = 'Количество Stars';
+            hint.textContent = 'Минимум: 29 Stars';
+          }
         }
 
         function openStoryModal(chapter) {
@@ -2361,65 +1448,149 @@ Digger собрал экстренный стрим. "Я обещаю: кажд�
         function openBuyChapterModal(chapter) {
           currentBuyChapter = chapter;
           document.getElementById('buyChapterName').textContent = `Главу ${chapter.id}: ${chapter.title}`;
-          document.getElementById('buyChapterPrice').textContent = `${chapter.price} ⭐`;
+          updateBuyChapterPrice();
           document.getElementById('buyChapterModal').classList.add('active');
+          document.getElementById('buyCurrency').addEventListener('change', updateBuyChapterPrice);
+        }
+
+        function updateBuyChapterPrice() {
+          const currency = document.getElementById('buyCurrency').value;
+          const priceSpan = document.getElementById('buyChapterPrice');
+          if (currency === 'ton') {
+            priceSpan.textContent = `${currentBuyChapter.tonPrice} TON`;
+          } else {
+            priceSpan.textContent = `${currentBuyChapter.price} ⭐`;
+          }
         }
 
         async function confirmBuyChapter() {
+          const currency = document.getElementById('buyCurrency').value;
           closeModal('buyChapterModal');
-          if (userData.balance < currentBuyChapter.price) {
-            showToast('Недостаточно Stars', 'error');
-            return;
-          }
-          // Отправка на бэкенд
-          try {
-            const response = await fetch(`${backendUrl}/buy-chapter`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'Authorization': initData },
-              body: JSON.stringify({ chapterId: currentBuyChapter.id })
-            });
-            if (response.ok) {
-              userData.unlockedChapters.push(currentBuyChapter.id);
-              userData.dailyOpened++;
-              userData.balance -= currentBuyChapter.price;
-              document.getElementById('balanceAmount').textContent = userData.balance;
-              loadHistory();
-              showToast('Глава открыта!', 'success');
-              openStoryModal(currentBuyChapter);
-            } else {
-              showToast('Ошибка покупки', 'error');
+
+          if (currency === 'stars') {
+            if (userData.balance < currentBuyChapter.price) {
+              showToast('Недостаточно Stars на балансе', 'error');
+              return;
             }
-          } catch (e) {
-            showToast('Ошибка соединения', 'error');
+
+            try {
+              const response = await fetch(`${backendUrl}/buy-chapter`, {
+                method: 'POST',
+                headers: { 
+                  'Content-Type': 'application/json', 
+                  'Authorization': initData 
+                },
+                body: JSON.stringify({ 
+                  chapterId: currentBuyChapter.id,
+                  currency: 'stars'
+                })
+              });
+
+              const result = await response.json();
+
+              if (response.ok && result.success) {
+                userData.unlockedChapters.push(currentBuyChapter.id);
+                userData.dailyOpened++;
+                userData.balance -= currentBuyChapter.price;
+                document.getElementById('balanceAmount').textContent = userData.balance;
+                await loadHistory();
+                showToast('Глава успешно открыта!', 'success');
+                openStoryModal(currentBuyChapter);
+              } else {
+                showToast(result.error || 'Ошибка при покупке главы', 'error');
+              }
+            } catch (e) {
+              console.error(e);
+              showToast('Ошибка соединения с сервером', 'error');
+            }
+          } 
+          else if (currency === 'ton') {
+            if (currentBuyChapter.tonPrice <= 0) {
+              showToast('Эта глава не продаётся за TON', 'error');
+              return;
+            }
+
+            try {
+              // Подключаем кошелёк если ещё не подключен
+              if (!tonConnectUI.connected) {
+                await tonConnectUI.connectWallet();
+              }
+
+              if (!tonConnectUI.connected) {
+                showToast('Не удалось подключить кошелёк', 'error');
+                return;
+              }
+
+              // Формируем транзакцию
+              const transaction = {
+                validUntil: Math.floor(Date.now() / 1000) + 360,
+                messages: [
+                  {
+                    address: RECEIVER_ADDRESS,
+                    amount: (currentBuyChapter.tonPrice * 1e9).toString(), // nanoTON
+                    payload: btoa(
+                      JSON.stringify({
+                        type: 'buy_chapter',
+                        userId: user.id,
+                        chapterId: currentBuyChapter.id,
+                        initData: initData
+                      })
+                    )
+                  }
+                ]
+              };
+
+              showToast('Подтвердите транзакцию в кошельке...', 'success');
+
+              const result = await tonConnectUI.sendTransaction(transaction);
+
+              if (result) {
+                showToast('Транзакция отправлена! Ожидайте подтверждения...', 'success');
+                
+                // Запускаем проверку статуса покупки
+                startPurchasePolling(currentBuyChapter.id);
+              }
+            } catch (e) {
+              console.error(e);
+              showToast(e.message || 'Ошибка при отправке транзакции', 'error');
+            }
           }
         }
 
-        async function processTopup() {
-          const amount = parseInt(document.getElementById('topupAmount').value);
-          if (amount < 29) {
-            showToast('Минимум 29 Stars', 'error');
-            return;
-          }
-          closeModal('topupModal');
+        // Периодическая проверка покупки после оплаты TON
+        function startPurchasePolling(chapterId) {
+          let attempts = 0;
+          const maxAttempts = 30; // ~5 минут при интервале 10 сек
 
-          // Отправка запроса на сервер для создания invoice через Telegram Stars (XTR)
-          try {
-            const response = await fetch(`${backendUrl}/create_invoice`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ initData: tg.initData, amount: amount })
-            });
-            const data = await response.json();
-            if (data.success) {
-              showToast('Счёт отправлен! Проверьте чат с ботом и оплатите через Telegram Stars.', 'success');
-              // Запустить polling для обновления баланса после оплаты
-              startBalancePolling();
-            } else {
-              showToast(data.error || 'Ошибка создания счёта', 'error');
+          const interval = setInterval(async () => {
+            attempts++;
+            
+            try {
+              const response = await fetch(`${backendUrl}/check-purchase/${user.id}/${chapterId}`, {
+                headers: { 'Authorization': initData }
+              });
+              
+              const data = await response.json();
+              
+              if (data.purchased) {
+                clearInterval(interval);
+                userData.unlockedChapters.push(chapterId);
+                userData.dailyOpened++;
+                await loadHistory();
+                showToast('Глава успешно оплачена и открыта!', 'success');
+                
+                const chapter = storyChapters.find(ch => ch.id === chapterId);
+                if (chapter) openStoryModal(chapter);
+              }
+              
+              if (attempts >= maxAttempts) {
+                clearInterval(interval);
+                showToast('Покупка ещё не подтверждена. Проверьте позже.', 'warning');
+              }
+            } catch (e) {
+              console.error(e);
             }
-          } catch (e) {
-            showToast('Ошибка соединения', 'error');
-          }
+          }, 10000);
         }
 
         // Polling для обновления баланса после оплаты (каждые 5 секунд в течение 2 минут)
@@ -2432,6 +1603,91 @@ Digger собрал экстренный стрим. "Я обещаю: кажд�
             attempts--;
             if (attempts <= 0) clearInterval(pollingInterval);
           }, 5000);
+        }
+
+        // Обработка пополнения (Stars или TON)
+        async function processTopup() {
+          const currency = document.getElementById('topupCurrency').value;
+          const amount = parseFloat(document.getElementById('topupAmount').value);
+
+          closeModal('topupModal');
+
+          if (currency === 'stars') {
+            if (amount < 29 || isNaN(amount)) {
+              showToast('Минимум 29 Stars', 'error');
+              return;
+            }
+
+            try {
+              const response = await fetch(`${backendUrl}/create_invoice`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                  initData: tg.initData, 
+                  amount: Math.round(amount),
+                  currency: 'stars'
+                })
+              });
+
+              const data = await response.json();
+
+              if (data.success) {
+                showToast('Счёт на Stars отправлен! Проверьте чат с ботом.', 'success');
+                startBalancePolling();
+              } else {
+                showToast(data.error || 'Ошибка создания счёта', 'error');
+              }
+            } catch (e) {
+              showToast('Ошибка соединения', 'error');
+            }
+          } 
+          else if (currency === 'ton') {
+            if (amount < 1 || isNaN(amount)) {
+              showToast('Минимум 1 TON', 'error');
+              return;
+            }
+
+            try {
+              if (!tonConnectUI.connected) {
+                await tonConnectUI.connectWallet();
+              }
+
+              if (!tonConnectUI.connected) {
+                showToast('Не удалось подключить кошелёк', 'error');
+                return;
+              }
+
+              const transaction = {
+                validUntil: Math.floor(Date.now() / 1000) + 360,
+                messages: [
+                  {
+                    address: RECEIVER_ADDRESS,
+                    amount: (amount * 1e9).toString(),
+                    payload: btoa(
+                      JSON.stringify({
+                        type: 'topup',
+                        userId: user.id,
+                        amount: amount,
+                        initData: initData
+                      })
+                    )
+                  }
+                ]
+              };
+
+              showToast(`Отправляете ${amount} TON... Подтвердите в кошельке`, 'success');
+
+              const result = await tonConnectUI.sendTransaction(transaction);
+
+              if (result) {
+                showToast('Транзакция отправлена! Баланс обновится после подтверждения', 'success');
+                startBalancePolling();
+              }
+            } catch (e) {
+              console.error(e);
+              showToast(e.message || 'Ошибка при пополнении', 'error');
+            }
+          }
         }
 
         function copyRefLink() {
@@ -2493,6 +1749,7 @@ Digger собрал экстренный стрим. "Я обещаю: кажд�
           generateStars();
           generateSnowflakes();
           await loadProfile();
+          await loadChapters(); // Загрузка глав с бэкенда
           if (user.id === ADMIN_ID) {
             const adminButton = document.createElement('button');
             adminButton.className = 'nav-item';
@@ -2502,6 +1759,15 @@ Digger собрал экстренный стрим. "Я обещаю: кажд�
             document.getElementById('pageAdmin').style.display = 'block';
           }
           showPage('Profile');
+        }
+
+        async function loadChapters() {
+          try {
+            const response = await fetch(`${backendUrl}/chapters`);
+            storyChapters = await response.json();
+          } catch (e) {
+            console.error(e);
+          }
         }
 
         init();
