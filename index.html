@@ -1108,9 +1108,10 @@
         const ADMIN_ID = 1027715401; 
         const RECEIVER_ADDRESS = 'UQBIYfPSgJN7n3eoYpkRqR1jnpQhLnwojPLKywyvr2sTE2HZ'; // Updated from bot.py
         const STARS_PER_TON = 100; // Курс: 1 TON = 100 Stars (для пополнения)
-        const tonConnectUI = new TONConnectUI({
-            manifestUrl: 'https://your-app-url.com/tonconnect-manifest.json' // Замените на реальный URL манифеста
-        });
+        const tonConnectUI = new TonConnectUI({
+    manifestUrl: 'https://raw.githubusercontent.com/MuhammadaminPy/diggerfest/main/tonconnect-manifest.json',
+    buttonRootId: 'ton-connect-button'
+});
 
         // Данные истории теперь загружаются с бэкенда
         let storyChapters = [];
