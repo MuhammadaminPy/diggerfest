@@ -7,7 +7,6 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- TON Connect UI Script -->
     <script src="https://unpkg.com/@tonconnect/ui@latest/dist/tonconnect-ui.min.js"></script>
     <style>
         :root {
@@ -19,6 +18,8 @@
             --accent-bronze: #cd7f32;
             --accent-blue: #4fc3f7;
             --accent-cyan: #00e5ff;
+            --accent-red: #ff0000;
+            --accent-green: #00ff00;
             --text-primary: #ffffff;
             --text-secondary: #a0c4e8;
             --success: #4caf50;
@@ -41,7 +42,6 @@
             position: relative;
         }
 
-        /* Звездное небо */
         .stars-container {
             position: fixed;
             top: 0;
@@ -61,6 +61,19 @@
             border-radius: 50%;
             animation: twinkle 2s infinite ease-in-out;
         }
+
+        .christmas-light {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 2px currentColor;
+            animation: glow 1.5s infinite alternate;
+        }
+
+        .christmas-light.red { background: var(--accent-red); color: var(--accent-red); }
+        .christmas-light.green { background: var(--accent-green); color: var(--accent-green); }
+        .christmas-light.blue { background: var(--accent-blue); color: var(--accent-blue); }
 
         .shooting-star {
             position: absolute;
@@ -88,13 +101,17 @@
             50% { opacity: 1; transform: scale(1.2); }
         }
 
+        @keyframes glow {
+            0% { opacity: 0.6; box-shadow: 0 0 5px 1px currentColor; }
+            100% { opacity: 1; box-shadow: 0 0 15px 3px currentColor; }
+        }
+
         @keyframes shoot {
             0% { transform: translateX(-100px) translateY(-100px); opacity: 1; }
             70% { opacity: 1; }
             100% { transform: translateX(calc(100vw + 100px)) translateY(calc(100vh + 100px)); opacity: 0; }
         }
 
-        /* Снежинки */
         .snowflake {
             position: fixed;
             color: rgba(255, 255, 255, 0.8);
@@ -109,7 +126,6 @@
             100% { transform: translateY(110vh) rotate(360deg); opacity: 0.3; }
         }
 
-        /* Санта на санях */
         .santa-container {
             position: fixed;
             top: 10%;
@@ -133,7 +149,22 @@
             100% { left: 110%; top: 25%; }
         }
 
-        /* Заголовок */
+        .christmas-tree {
+            position: fixed;
+            bottom: 0;
+            right: 20px;
+            font-size: 5rem;
+            opacity: 0.2;
+            pointer-events: none;
+            z-index: 0;
+            animation: treeGlow 3s infinite alternate;
+        }
+
+        @keyframes treeGlow {
+            0% { filter: drop-shadow(0 0 5px rgba(0, 255, 0, 0.5)); }
+            100% { filter: drop-shadow(0 0 20px rgba(0, 255, 0, 0.8)); }
+        }
+
         .header {
             position: relative;
             z-index: 10;
@@ -172,7 +203,6 @@
             margin-top: 5px;
         }
 
-        /* Основной контент */
         .main-content {
             position: relative;
             z-index: 10;
@@ -194,14 +224,13 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Карточки */
         .card {
             background: var(--bg-card);
             border-radius: 20px;
             padding: 20px;
             margin-bottom: 16px;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(79, 195, 247, 0.2);
+            border: 1px solid rgba(255, 0, 0, 0.2);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
 
@@ -213,7 +242,6 @@
             letter-spacing: 1px;
         }
 
-        /* Профиль */
         .profile-avatar {
             width: 100px;
             height: 100px;
@@ -277,7 +305,6 @@
             font-size: 2rem;
         }
 
-        /* Кнопки */
         .btn {
             display: flex;
             align-items: center;
@@ -324,7 +351,6 @@
             transform: none !important;
         }
 
-        /* Реферальная секция */
         .ref-link-box {
             background: rgba(79, 195, 247, 0.1);
             border-radius: 12px;
@@ -362,11 +388,12 @@
             color: var(--text-secondary);
         }
 
-        /* Топ листинг */
         .top-list {
             display: flex;
             flex-direction: column;
             gap: 10px;
+            max-height: 60vh;
+            overflow-y: auto;
         }
 
         .top-item {
@@ -397,6 +424,10 @@
         .top-item.rank-4, .top-item.rank-5 {
             background: linear-gradient(135deg, rgba(79, 195, 247, 0.2), rgba(79, 195, 247, 0.05));
             border: 1px solid rgba(79, 195, 247, 0.3);
+        }
+
+        .top-item:not(.rank-1):not(.rank-2):not(.rank-3):not(.rank-4):not(.rank-5) {
+            border: 1px solid rgba(255, 0, 0, 0.3);
         }
 
         .top-rank {
@@ -448,7 +479,6 @@
             margin-right: 4px;
         }
 
-        /* История */
         .story-grid {
             display: grid;
             gap: 12px;
@@ -541,7 +571,6 @@
             color: var(--success);
         }
 
-        /* Модальное окно */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -635,7 +664,6 @@
             color: var(--accent-gold);
         }
 
-        /* Форма пополнения */
         .topup-form {
             display: flex;
             flex-direction: column;
@@ -680,7 +708,6 @@
             text-align: center;
         }
 
-        /* Нижняя навигация */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -726,7 +753,6 @@
             transform: scale(1.1);
         }
 
-        /* Уведомления */
         .toast {
             position: fixed;
             top: 20px;
@@ -761,7 +787,6 @@
             background: rgba(255, 193, 7, 0.2);
         }
 
-        /* Лимит историй */
         .daily-limit {
             background: rgba(255, 193, 7, 0.1);
             border: 1px solid rgba(255, 193, 7, 0.3);
@@ -779,7 +804,6 @@
             font-size: 1.2rem;
         }
 
-        /* Задания */
         .task-list {
             display: flex;
             flex-direction: column;
@@ -813,7 +837,6 @@
             gap: 10px;
         }
 
-        /* Админ статистика */
         .admin-stat {
             margin-bottom: 15px;
             padding: 10px;
@@ -830,7 +853,6 @@
             color: var(--accent-gold);
         }
 
-        /* Редактирование глав */
         .chapter-edit {
             margin-bottom: 20px;
             padding: 15px;
@@ -854,15 +876,10 @@
     </style>
 </head>
 <body>
-    <!-- Звезды и снег -->
     <div class="stars-container" id="starsContainer"></div>
 
-    <!-- Санта -->
-    <div class="santa-container">
-        <div class="santa">🎅</div>
-    </div>
+    <div class="christmas-tree">🎄</div>
 
-    <!-- Заголовок -->
     <header class="header">
         <h1 class="logo">
             <i class="fas fa-gem"></i>
@@ -871,9 +888,7 @@
         <p class="subtitle">🎄 Новогодний майнинг в мире TON 🎄</p>
     </header>
 
-    <!-- Основной контент -->
     <main class="main-content">
-        <!-- Профиль -->
         <div class="page active" id="pageProfile">
             <div class="card">
                 <div class="profile-avatar" id="profileAvatar">
@@ -899,7 +914,6 @@
             </button>
         </div>
 
-        <!-- ТОП -->
         <div class="page" id="pageTop">
             <div class="card">
                 <h3 class="card-title">Ваша реферальная ссылка</h3>
@@ -913,73 +927,56 @@
                 <div class="ref-stats">
                     <div class="ref-stat">
                         <div class="ref-stat-value" id="refCount">0</div>
-                        <div class="ref-stat-label">Рефералы</div>
+                        <div class="ref-stat-label">Рефералов</div>
                     </div>
                     <div class="ref-stat">
-                        <div class="ref-stat-value" id="refEarnings">0 ⭐</div>
-                        <div class="ref-stat-label">Заработок</div>
+                        <div class="ref-stat-value" id="refEarnings">0</div>
+                        <div class="ref-stat-label">Заработано</div>
                     </div>
                 </div>
             </div>
+
             <div class="card">
-                <h3 class="card-title">ТОП 25 рефералов</h3>
-                <div class="top-list" id="topList"></div>
+                <h3 class="card-title">Топ 25 рефералов</h3>
+                <div class="top-list" id="topList">
+                </div>
             </div>
         </div>
 
-        <!-- Задания -->
         <div class="page" id="pageTasks">
             <div class="card">
-                <h3 class="card-title">Доступные задания</h3>
+                <h3 class="card-title">Задания</h3>
                 <div class="task-list" id="taskList"></div>
             </div>
+            <button class="btn btn-gold" onclick="openAddTaskModal()" style="display: none;" id="addTaskButton">Добавить задание</button>
         </div>
 
-        <!-- История -->
         <div class="page" id="pageHistory">
             <div class="daily-limit">
                 <i class="fas fa-clock"></i>
-                <span>Открыто сегодня: <span id="dailyOpened">0</span> / 2</span>
+                <span>Открыто сегодня: <span id="dailyOpened">0</span>/2 глав</span>
             </div>
             <div class="story-grid" id="storyGrid"></div>
         </div>
 
-        <!-- Админ панель -->
-        <div class="page" id="pageAdmin">
+        <div class="page" id="pageAdmin" style="display: none;">
             <div class="card">
                 <h3 class="card-title">Админ статистика</h3>
-                <div class="admin-stat">
-                    <label>Открыто глав сегодня:</label>
-                    <value id="adminDailyOpens">0</value>
-                </div>
-                <div class="admin-stat">
-                    <label>Заработано за 24 часа:</label>
-                    <value id="adminEarn24h">0 ⭐</value>
-                </div>
-                <div class="admin-stat">
-                    <label>Заработано за 7 дней:</label>
-                    <value id="adminEarn7d">0 ⭐</value>
-                </div>
-                <div class="admin-stat">
-                    <label>Заработано за 10 дней:</label>
-                    <value id="adminEarn10d">0 ⭐</value>
-                </div>
-                <div class="admin-stat">
-                    <label>Первый завершивший все истории:</label>
-                    <value id="adminFirstCompleter">Никто</value>
-                </div>
+                <div class="admin-stat"><label>Открытий за день:</label> <value id="adminDailyOpens">0</value></div>
+                <div class="admin-stat"><label>Заработано за 24ч:</label> <value id="adminEarn24h">0 ⭐</value></div>
+                <div class="admin-stat"><label>Заработано за 7д:</label> <value id="adminEarn7d">0 ⭐</value></div>
+                <div class="admin-stat"><label>Заработано за 10д:</label> <value id="adminEarn10d">0 ⭐</value></div>
+                <div class="admin-stat"><label>Первый собравший пасхалку:</label> <value id="adminFirstCompleter">Никто</value></div>
             </div>
-            <button class="btn btn-gold" onclick="openAddTaskModal()">
-                <i class="fas fa-plus"></i> Добавить задание
-            </button>
             <div class="card">
-                <h3 class="card-title">Редактировать главы</h3>
+                <h3 class="card-title">Редактирование глав</h3>
                 <div id="adminChaptersList"></div>
             </div>
         </div>
+
+        <div id="toast" class="toast"></div>
     </main>
 
-    <!-- Нижняя навигация -->
     <nav class="bottom-nav" id="bottomNav">
         <button class="nav-item active" onclick="showPage('Profile')">
             <i class="fas fa-user"></i>
@@ -999,14 +996,11 @@
         </button>
     </nav>
 
-    <!-- Модальное окно пополнения -->
     <div class="modal-overlay" id="topupModal">
         <div class="modal">
             <div class="modal-header">
-                <h3 class="modal-title">⭐ Пополнение Stars</h3>
-                <button class="modal-close" onclick="closeModal('topupModal')">
-                    <i class="fas fa-times"></i>
-                </button>
+                <h2 class="modal-title">Пополнение баланса</h2>
+                <button class="modal-close" onclick="closeModal('topupModal')">×</button>
             </div>
             <div class="modal-body">
                 <div class="topup-form">
@@ -1015,769 +1009,736 @@
                         <option value="ton">TON</option>
                     </select>
                     <div class="input-group">
-                        <i class="fas fa-star"></i>
-                        <input type="number" id="topupAmount" placeholder="Количество" min="29" value="29">
+                        <i class="fas fa-coins"></i>
+                        <input type="number" id="topupAmount" min="29" value="29" placeholder="Количество">
                     </div>
                     <p class="input-hint" id="topupHint">Минимум: 29 Stars</p>
-                    <button class="btn btn-gold" onclick="processTopup()">
-                        <i class="fas fa-bolt"></i>
-                        Оплатить
-                    </button>
+                    <button class="btn btn-gold" onclick="processTopup()">Пополнить</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Модальное окно истории -->
     <div class="modal-overlay" id="storyModal">
         <div class="modal">
             <div class="modal-header">
-                <h3 class="modal-title" id="storyModalTitle">Глава 1</h3>
-                <button class="modal-close" onclick="closeModal('storyModal')">
-                    <i class="fas fa-times"></i>
-                </button>
+                <h2 class="modal-title" id="storyModalTitle"></h2>
+                <button class="modal-close" onclick="closeModal('storyModal')">×</button>
             </div>
             <div class="modal-body">
-                <div class="story-content" id="storyModalContent">
-                    <!-- Контент истории -->
-                </div>
+                <div class="story-content" id="storyModalContent"></div>
                 <div class="story-easter-egg">
-                    <p class="easter-label">🔮 Пасхальное слово:</p>
-                    <p class="easter-word" id="storyEasterWord">???</p>
+                    <p class="easter-label">Пасхальное слово:</p>
+                    <p class="easter-word" id="storyEasterWord"></p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Модальное окно покупки главы -->
     <div class="modal-overlay" id="buyChapterModal">
         <div class="modal">
             <div class="modal-header">
-                <h3 class="modal-title">🔓 Открыть главу</h3>
-                <button class="modal-close" onclick="closeModal('buyChapterModal')">
-                    <i class="fas fa-times"></i>
-                </button>
+                <h2 class="modal-title">Купить главу</h2>
+                <button class="modal-close" onclick="closeModal('buyChapterModal')">×</button>
             </div>
             <div class="modal-body">
-                <p style="text-align: center; margin-bottom: 20px;">
-                    Открыть <strong id="buyChapterName">Главу 1</strong> за <span id="buyChapterPrice" style="color: var(--accent-gold); font-weight: bold;">29 ⭐</span>?
-                </p>
+                <p>Открыть <span id="buyChapterName"></span> за <span id="buyChapterPrice"></span>?</p>
                 <select id="buyCurrency">
                     <option value="stars">Stars</option>
                     <option value="ton">TON</option>
                 </select>
-                <button class="btn btn-gold" onclick="confirmBuyChapter()">
-                    <i class="fas fa-unlock"></i>
-                    Открыть
-                </button>
+                <button class="btn btn-gold" onclick="confirmBuyChapter()">Купить</button>
             </div>
         </div>
     </div>
 
-    <!-- Модальное окно добавления задания (для админа) -->
     <div class="modal-overlay" id="addTaskModal">
         <div class="modal">
             <div class="modal-header">
-                <h3 class="modal-title">Добавить задание</h3>
-                <button class="modal-close" onclick="closeModal('addTaskModal')">
-                    <i class="fas fa-times"></i>
-                </button>
+                <h2 class="modal-title">Добавить задание</h2>
+                <button class="modal-close" onclick="closeModal('addTaskModal')">×</button>
             </div>
             <div class="modal-body">
                 <select id="taskType">
-                    <option value="channel">Подписка на канал</option>
-                    <option value="bot">Переход на бота</option>
+                    <option value="join_channel">Присоединиться к каналу</option>
+                    <option value="join_chat">Присоединиться к чату</option>
                 </select>
                 <input type="text" id="taskTitle" placeholder="Название задания">
-                <input type="text" id="taskLink" placeholder="Ссылка (t.me/...)">
-                <input type="number" id="taskReward" placeholder="Награда (stars)" min="1">
-                <input type="number" id="taskMaxActivations" placeholder="Макс. активаций" min="1">
-                <button class="btn btn-gold" onclick="addTask()">
-                    <i class="fas fa-plus"></i> Добавить
-                </button>
+                <input type="text" id="taskLink" placeholder="Ссылка">
+                <input type="number" id="taskReward" placeholder="Награда (Stars)">
+                <input type="number" id="taskMaxActivations" placeholder="Макс. активаций">
+                <button class="btn btn-gold" onclick="addTask()">Добавить</button>
             </div>
         </div>
     </div>
 
-    <!-- Toast уведомление -->
-    <div class="toast" id="toast"></div>
-
     <script>
-        // Конфигурация
-        const BOT_USERNAME = 'diggerfest_bot'; 
-        const ADMIN_ID = 1027715401; 
-        const RECEIVER_ADDRESS = 'UQBIYfPSgJN7n3eoYpkRqR1jnpQhLnwojPLKywyvr2sTE2HZ'; // Updated from bot.py
-        const STARS_PER_TON = 100; // Курс: 1 TON = 100 Stars (для пополнения)
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        const initData = tg.initData;
+        const user = JSON.parse(tg.initDataUnsafe.user || '{}');
+        const backendUrl = `${location.origin}/api`;
         const tonConnectUI = new TonConnectUI({
     manifestUrl: 'https://raw.githubusercontent.com/MuhammadaminPy/diggerfest/main/tonconnect-manifest.json',
     buttonRootId: 'ton-connect-button'
 });
-
-        // Данные истории теперь загружаются с бэкенда
+        let userData = {};
         let storyChapters = [];
 
-        // Telegram Web App
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.ready();
-        const user = tg.initDataUnsafe.user || { id: 123456, first_name: 'Test User', photo_url: '' };
-        const initData = tg.initData;
-
-        // Backend URL
-        const backendUrl = 'https://quinsied-undeliberatively-kerry.ngrok-free.dev';
-        
-
-        // Локальные данные
-        let userData = {
-          balance: 0,
-          refLink: `https://t.me/${BOT_USERNAME}?start=ref${user.id}`,
-          refCount: 0,
-          refEarnings: 0,
-          unlockedChapters: [],
-          dailyOpened: 0
-        };
-
-        // Функции
         function showPage(pageId) {
-          document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-          document.getElementById(`page${pageId}`).classList.add('active');
-          document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-          document.querySelector(`.nav-item[onclick="showPage('${pageId}')"]`).classList.add('active');
-          loadPageData(pageId);
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(`page${pageId}`).classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            document.querySelector(`.nav-item[onclick="showPage('${pageId}')"]`).classList.add('active');
+            loadPageData(pageId);
         }
 
         async function loadPageData(pageId) {
-          if (pageId === 'Profile') {
-            await loadProfile();
-          } else if (pageId === 'Top') {
-            await loadTop();
-          } else if (pageId === 'Tasks') {
-            await loadTasks();
-          } else if (pageId === 'History') {
-            await loadHistory();
-          } else if (pageId === 'Admin') {
-            await loadAdmin();
-            if (user.id === ADMIN_ID) await loadAdminChapters();
-          }
+            if (pageId === 'Profile') {
+                await loadProfile();
+            } else if (pageId === 'Top') {
+                await loadTop();
+            } else if (pageId === 'Tasks') {
+                await loadTasks();
+            } else if (pageId === 'History') {
+                await loadHistory();
+            } else if (pageId === 'Admin') {
+                await loadAdmin();
+                if (user.id === ADMIN_ID) await loadAdminChapters();
+            }
         }
 
         async function loadProfile() {
-          try {
-            const response = await fetch(`${backendUrl}/user/${user.id}`, {
-              headers: { 'Authorization': initData }
-            });
-            userData = await response.json();
-          } catch (e) {
-            console.error(e);
-          }
-          document.getElementById('profileName').textContent = user.first_name;
-          document.getElementById('profileId').textContent = `ID: ${user.id}`;
-          document.getElementById('balanceAmount').textContent = userData.balance;
-          const avatar = document.getElementById('profileAvatar');
-          if (user.photo_url) {
-            const img = document.createElement('img');
-            img.src = user.photo_url;
-            avatar.innerHTML = '';
-            avatar.appendChild(img);
-          }
+            try {
+                const response = await fetch(`${backendUrl}/user/${user.id}`, {
+                    headers: { 'Authorization': initData }
+                });
+                if (!response.ok) throw new Error('Ошибка загрузки профиля');
+                userData = await response.json();
+                document.getElementById('profileName').textContent = userData.first_name || 'Неизвестно';
+                document.getElementById('profileId').textContent = `ID: ${userData.id || 'Неизвестно'}`;
+                document.getElementById('balanceAmount').textContent = userData.balance || 0;
+                const avatar = document.getElementById('profileAvatar');
+                if (userData.photo_url) {
+                    const img = document.createElement('img');
+                    img.src = userData.photo_url;
+                    avatar.innerHTML = '';
+                    avatar.appendChild(img);
+                }
+            } catch (e) {
+                console.error(e);
+                showToast('Ошибка загрузки профиля', 'error');
+            }
         }
 
         async function loadTop() {
-          document.getElementById('refLink').textContent = userData.refLink;
-          document.getElementById('refCount').textContent = userData.refCount;
-          document.getElementById('refEarnings').textContent = userData.refEarnings;
-          
-          try {
-            const response = await fetch(`${backendUrl}/top`);
-            const topUsers = await response.json();
-            const topList = document.getElementById('topList');
-            topList.innerHTML = '';
-            topUsers.forEach((u, index) => {
-              const item = document.createElement('div');
-              item.className = `top-item rank-${index + 1}`;
-              item.innerHTML = `
-                <span class="top-rank">${index + 1}</span>
-                <div class="top-avatar">
-                  ${u.photo_url ? `<img src="${u.photo_url}">` : '<i class="fas fa-user"></i>'}
-                </div>
-                <div class="top-info">
-                  <div class="top-name">${u.first_name}</div>
-                  <div class="top-refs"><i class="fas fa-users"></i>${u.refCount} рефералов</div>
-                </div>
-              `;
-              topList.appendChild(item);
-            });
-          } catch (e) {
-            console.error(e);
-          }
+            try {
+                const response = await fetch(`${backendUrl}/top?limit=25`, {
+                    headers: { 'Authorization': initData }
+                });
+                if (!response.ok) throw new Error('Ошибка загрузки топа');
+                const topUsers = await response.json();
+                const topList = document.getElementById('topList');
+                topList.innerHTML = '';
+                topUsers.forEach((u, index) => {
+                    const item = document.createElement('div');
+                    item.className = `top-item rank-${index + 1}`;
+                    item.innerHTML = `
+                        <span class="top-rank">${index + 1}</span>
+                        <div class="top-avatar">
+                            ${u.photo_url ? `<img src="${u.photo_url}">` : '<i class="fas fa-user"></i>'}
+                        </div>
+                        <div class="top-info">
+                            <div class="top-name">${u.first_name || 'Аноним'}</div>
+                            <div class="top-refs"><i class="fas fa-users"></i>${u.ref_count || 0} рефералов</div>
+                        </div>
+                    `;
+                    topList.appendChild(item);
+                });
+
+                userData.refLink = `https://t.me/yourbot?start=ref${user.id}`;
+                document.getElementById('refLink').textContent = userData.refLink;
+                document.getElementById('refCount').textContent = userData.ref_count || 0;
+                document.getElementById('refEarnings').textContent = userData.ref_earnings || 0;
+            } catch (e) {
+                console.error(e);
+                showToast('Ошибка загрузки топа', 'error');
+            }
         }
 
         async function loadTasks() {
-          try {
-            const response = await fetch(`${backendUrl}/tasks`, {
-              headers: { 'Authorization': initData }
-            });
-            const tasks = await response.json();
-            const taskList = document.getElementById('taskList');
-            taskList.innerHTML = '';
-            tasks.sort((a, b) => a.is_completed - b.is_completed); // Completed to bottom
-            tasks.forEach(task => {
-              const item = document.createElement('div');
-              item.className = `task-item ${task.is_completed ? 'completed' : ''}`;
-              item.innerHTML = `
-                <div class="task-title">${task.title}</div>
-                <div class="task-status">Статус: ${task.is_completed ? 'Получена' : 'Не получена'}</div>
-                <div class="task-status">Награда: ${task.reward} ⭐</div>
-                <div class="task-status">Активаций: ${task.current_activations}/${task.max_activations}</div>
-                ${task.is_completed || task.current_activations >= task.max_activations ? '' : `
-                  <div class="task-actions">
-                    <button class="btn btn-primary" onclick="window.open('${task.link}', '_blank')">Перейти</button>
-                    <button class="btn btn-gold" onclick="completeTask(${task.id})">Проверить</button>
-                  </div>
-                `}
-              `;
-              taskList.appendChild(item);
-            });
-          } catch (e) {
-            console.error(e);
-            showToast('Ошибка загрузки заданий', 'error');
-          }
+            try {
+                const response = await fetch(`${backendUrl}/tasks`, {
+                    headers: { 'Authorization': initData }
+                });
+                const tasks = await response.json();
+                const taskList = document.getElementById('taskList');
+                taskList.innerHTML = '';
+                tasks.sort((a, b) => a.is_completed - b.is_completed);
+                tasks.forEach(task => {
+                    const item = document.createElement('div');
+                    item.className = `task-item ${task.is_completed ? 'completed' : ''}`;
+                    item.innerHTML = `
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-status">Статус: ${task.is_completed ? 'Получена' : 'Не получена'}</div>
+                        <div class="task-status">Награда: ${task.reward} ⭐</div>
+                        <div class="task-status">Активаций: ${task.current_activations}/${task.max_activations}</div>
+                        ${task.is_completed || task.current_activations >= task.max_activations ? '' : `
+                          <div class="task-actions">
+                            <button class="btn btn-primary" onclick="window.open('${task.link}', '_blank')">Перейти</button>
+                            <button class="btn btn-gold" onclick="completeTask(${task.id})">Проверить</button>
+                          </div>
+                        `}
+                    `;
+                    taskList.appendChild(item);
+                });
+            } catch (e) {
+                console.error(e);
+                showToast('Ошибка загрузки заданий', 'error');
+            }
         }
 
         async function completeTask(taskId) {
-          try {
-            const response = await fetch(`${backendUrl}/complete_task`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'Authorization': initData },
-              body: JSON.stringify({ taskId })
-            });
-            const data = await response.json();
-            if (data.success) {
-              showToast('Задание выполнено! Награда зачислена.', 'success');
-              await loadProfile(); // Update balance
-              await loadTasks();
-            } else {
-              showToast(data.error || 'Ошибка выполнения', 'error');
+            try {
+                const response = await fetch(`${backendUrl}/complete_task`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': initData },
+                    body: JSON.stringify({ taskId })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showToast('Задание выполнено! Награда зачислена.', 'success');
+                    await loadProfile();
+                    await loadTasks();
+                } else {
+                    showToast(data.error || 'Ошибка выполнения', 'error');
+                }
+            } catch (e) {
+                showToast('Ошибка соединения', 'error');
             }
-          } catch (e) {
-            showToast('Ошибка соединения', 'error');
-          }
         }
 
         function openAddTaskModal() {
-          document.getElementById('addTaskModal').classList.add('active');
+            document.getElementById('addTaskModal').classList.add('active');
         }
 
         async function addTask() {
-          const type = document.getElementById('taskType').value;
-          const title = document.getElementById('taskTitle').value;
-          const link = document.getElementById('taskLink').value;
-          const reward = parseInt(document.getElementById('taskReward').value);
-          const max_activations = parseInt(document.getElementById('taskMaxActivations').value);
+            const type = document.getElementById('taskType').value;
+            const title = document.getElementById('taskTitle').value;
+            const link = document.getElementById('taskLink').value;
+            const reward = parseInt(document.getElementById('taskReward').value);
+            const max_activations = parseInt(document.getElementById('taskMaxActivations').value);
 
-          if (!title || !link || isNaN(reward) || isNaN(max_activations)) {
-            showToast('Заполните все поля', 'error');
-            return;
-          }
-
-          try {
-            const response = await fetch(`${backendUrl}/add_task`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'Authorization': initData },
-              body: JSON.stringify({ type, title, link, reward, max_activations })
-            });
-            const data = await response.json();
-            if (data.success) {
-              showToast('Задание добавлено!', 'success');
-              closeModal('addTaskModal');
-              await loadTasks();
-            } else {
-              showToast(data.error || 'Ошибка добавления', 'error');
+            if (!title || !link || isNaN(reward) || isNaN(max_activations)) {
+                showToast('Заполните все поля', 'error');
+                return;
             }
-          } catch (e) {
-            showToast('Ошибка соединения', 'error');
-          }
+
+            try {
+                const response = await fetch(`${backendUrl}/add_task`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': initData },
+                    body: JSON.stringify({ type, title, link, reward, max_activations })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showToast('Задание добавлено!', 'success');
+                    closeModal('addTaskModal');
+                    await loadTasks();
+                } else {
+                    showToast(data.error || 'Ошибка добавления', 'error');
+                }
+            } catch (e) {
+                showToast('Ошибка соединения', 'error');
+            }
         }
 
         async function loadHistory() {
-          try {
-            const response = await fetch(`${backendUrl}/unlocks/${user.id}`, {
-              headers: { 'Authorization': initData }
+            try {
+                const response = await fetch(`${backendUrl}/unlocks/${user.id}`, {
+                    headers: { 'Authorization': initData }
+                });
+                const data = await response.json();
+                userData.unlockedChapters = data.unlocked;
+                userData.dailyOpened = data.dailyOpened;
+            } catch (e) {
+                console.error(e);
+            }
+            
+            document.getElementById('dailyOpened').textContent = userData.dailyOpened;
+            const storyGrid = document.getElementById('storyGrid');
+            storyGrid.innerHTML = '';
+            let prevUnlocked = true;
+            storyChapters.forEach(chapter => {
+                const isUnlocked = userData.unlockedChapters.includes(chapter.id);
+                const canBuy = prevUnlocked && !isUnlocked && userData.dailyOpened < 2;
+                const div = document.createElement('div');
+                div.className = `story-chapter ${isUnlocked ? 'unlocked' : ''} ${canBuy ? 'available' : ''} ${!prevUnlocked ? 'locked' : ''}`;
+                div.innerHTML = `
+                  <span class="chapter-num">${chapter.id}</span>
+                  <div class="chapter-info">
+                    <div class="chapter-title">Глава ${chapter.id}: ${chapter.title}</div>
+                    <div class="chapter-status">
+                      ${isUnlocked ? '<i class="fas fa-check-circle"></i> Открыто' : '<i class="fas fa-lock"></i> Закрыто'}
+                    </div>
+                  </div>
+                  <div class="chapter-price">
+                    ${chapter.price} <i class="fas fa-star"></i> / ${chapter.ton_price} TON
+                  </div>
+                `;
+                div.onclick = () => {
+                  if (isUnlocked) {
+                    openStoryModal(chapter);
+                  } else if (canBuy) {
+                    openBuyChapterModal(chapter);
+                  } else {
+                    showToast('Нельзя открыть эту главу сейчас', 'error');
+                  }
+                };
+                storyGrid.appendChild(div);
+                if (!isUnlocked) prevUnlocked = false;
             });
-            const data = await response.json();
-            userData.unlockedChapters = data.unlocked;
-            userData.dailyOpened = data.dailyOpened;
-          } catch (e) {
-            console.error(e);
-          }
-          
-          document.getElementById('dailyOpened').textContent = userData.dailyOpened;
-          const storyGrid = document.getElementById('storyGrid');
-          storyGrid.innerHTML = '';
-          let prevUnlocked = true;
-          storyChapters.forEach(chapter => {
-            const isUnlocked = userData.unlockedChapters.includes(chapter.id);
-            const canBuy = prevUnlocked && !isUnlocked && userData.dailyOpened < 2;
-            const div = document.createElement('div');
-            div.className = `story-chapter ${isUnlocked ? 'unlocked' : ''} ${canBuy ? 'available' : ''} ${!prevUnlocked ? 'locked' : ''}`;
-            div.innerHTML = `
-              <span class="chapter-num">${chapter.id}</span>
-              <div class="chapter-info">
-                <div class="chapter-title">Глава ${chapter.id}: ${chapter.title}</div>
-                <div class="chapter-status">
-                  ${isUnlocked ? '<i class="fas fa-check-circle"></i> Открыто' : '<i class="fas fa-lock"></i> Закрыто'}
-                </div>
-              </div>
-              <div class="chapter-price">
-                ${chapter.price} <i class="fas fa-star"></i> / ${chapter.tonPrice} TON
-              </div>
-            `;
-            div.onclick = () => {
-              if (isUnlocked) {
-                openStoryModal(chapter);
-              } else if (canBuy) {
-                openBuyChapterModal(chapter);
-              } else {
-                showToast('Нельзя открыть эту главу сейчас', 'error');
-              }
-            };
-            storyGrid.appendChild(div);
-            if (!isUnlocked) prevUnlocked = false;
-          });
         }
 
         async function loadAdmin() {
-          try {
-            const response = await fetch(`${backendUrl}/admin/stats`, {
-              headers: { 'Authorization': initData }
-            });
-            if (response.ok) {
-              const stats = await response.json();
-              document.getElementById('adminDailyOpens').textContent = stats.dailyOpens;
-              document.getElementById('adminEarn24h').textContent = `${stats.earn24h} ⭐`;
-              document.getElementById('adminEarn7d').textContent = `${stats.earn7d} ⭐`;
-              document.getElementById('adminEarn10d').textContent = `${stats.earn10d} ⭐`;
-              document.getElementById('adminFirstCompleter').textContent = stats.firstCompleter || 'Никто';
-            } else {
-              showToast('Ошибка загрузки статистики', 'error');
+            try {
+                const response = await fetch(`${backendUrl}/admin/stats`, {
+                    headers: { 'Authorization': initData }
+                });
+                if (response.ok) {
+                    const stats = await response.json();
+                    document.getElementById('adminDailyOpens').textContent = stats.dailyOpens;
+                    document.getElementById('adminEarn24h').textContent = `${stats.earn24h} ⭐`;
+                    document.getElementById('adminEarn7d').textContent = `${stats.earn7d} ⭐`;
+                    document.getElementById('adminEarn10d').textContent = `${stats.earn10d} ⭐`;
+                    document.getElementById('adminFirstCompleter').textContent = stats.firstCompleter || 'Никто';
+                } else {
+                    showToast('Ошибка загрузки статистики', 'error');
+                }
+            } catch (e) {
+                showToast('Ошибка соединения', 'error');
             }
-          } catch (e) {
-            showToast('Ошибка соединения', 'error');
-          }
         }
 
         async function loadAdminChapters() {
-          try {
-            const response = await fetch(`${backendUrl}/chapters`, {
-              headers: { 'Authorization': initData }
-            });
-            const chapters = await response.json();
-            const list = document.getElementById('adminChaptersList');
-            list.innerHTML = '';
-            chapters.forEach(ch => {
-              const div = document.createElement('div');
-              div.className = 'chapter-edit';
-              div.innerHTML = `
-                <h4>Глава ${ch.id}: ${ch.title}</h4>
-                <input type="number" id="price_${ch.id}" value="${ch.price}" placeholder="Цена (stars)">
-                <input type="number" id="tonPrice_${ch.id}" value="${ch.tonPrice}" placeholder="Цена (TON)" step="0.01">
-                <textarea id="content_${ch.id}" placeholder="Содержание">${ch.content}</textarea>
-                <input type="text" id="easter_${ch.id}" value="${ch.easterWord}" placeholder="Пасхальное слово">
-                <button class="btn btn-primary" onclick="updateChapter(${ch.id})">Сохранить</button>
-              `;
-              list.appendChild(div);
-            });
-          } catch (e) {
-            showToast('Ошибка загрузки глав', 'error');
-          }
+            try {
+                const response = await fetch(`${backendUrl}/chapters`, {
+                    headers: { 'Authorization': initData }
+                });
+                const chapters = await response.json();
+                const list = document.getElementById('adminChaptersList');
+                list.innerHTML = '';
+                chapters.forEach(ch => {
+                    const div = document.createElement('div');
+                    div.className = 'chapter-edit';
+                    div.innerHTML = `
+                      <h4>Глава ${ch.id}: ${ch.title}</h4>
+                      <input type="number" id="price_${ch.id}" value="${ch.price}" placeholder="Цена (stars)">
+                      <input type="number" id="tonPrice_${ch.id}" value="${ch.ton_price}" placeholder="Цена (TON)" step="0.01">
+                      <textarea id="content_${ch.id}" placeholder="Содержание">${ch.content}</textarea>
+                      <input type="text" id="easter_${ch.id}" value="${ch.easter_word}" placeholder="Пасхальное слово">
+                      <button class="btn btn-primary" onclick="updateChapter(${ch.id})">Сохранить</button>
+                    `;
+                    list.appendChild(div);
+                });
+            } catch (e) {
+                showToast('Ошибка загрузки глав', 'error');
+            }
         }
 
         async function updateChapter(chId) {
-          const price = parseInt(document.getElementById(`price_${chId}`).value);
-          const tonPrice = parseFloat(document.getElementById(`tonPrice_${chId}`).value);
-          const content = document.getElementById(`content_${chId}`).value;
-          const easter = document.getElementById(`easter_${chId}`).value;
+            const price = parseInt(document.getElementById(`price_${chId}`).value);
+            const tonPrice = parseFloat(document.getElementById(`tonPrice_${chId}`).value);
+            const content = document.getElementById(`content_${chId}`).value;
+            const easter = document.getElementById(`easter_${chId}`).value;
 
-          try {
-            const response = await fetch(`${backendUrl}/update_chapter`, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'Authorization': initData },
-              body: JSON.stringify({ id: chId, price, ton_price: tonPrice, content, easter_word: easter })
-            });
-            const data = await response.json();
-            if (data.success) {
-              showToast('Глава обновлена!', 'success');
-              await loadHistory(); // Reload if needed
-            } else {
-              showToast(data.error || 'Ошибка обновления', 'error');
+            try {
+                const response = await fetch(`${backendUrl}/update_chapter`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': initData },
+                    body: JSON.stringify({ id: chId, price, ton_price: tonPrice, content, easter_word: easter })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showToast('Глава обновлена!', 'success');
+                    await loadHistory();
+                } else {
+                    showToast(data.error || 'Ошибка обновления', 'error');
+                }
+            } catch (e) {
+                showToast('Ошибка соединения', 'error');
             }
-          } catch (e) {
-            showToast('Ошибка соединения', 'error');
-          }
         }
 
         function openTopupModal() {
-          document.getElementById('topupModal').classList.add('active');
-          document.getElementById('topupCurrency').addEventListener('change', updateTopupForm);
-          updateTopupForm();
+            document.getElementById('topupModal').classList.add('active');
+            document.getElementById('topupCurrency').addEventListener('change', updateTopupForm);
+            updateTopupForm();
         }
 
         function updateTopupForm() {
-          const currency = document.getElementById('topupCurrency').value;
-          const input = document.getElementById('topupAmount');
-          const hint = document.getElementById('topupHint');
-          if (currency === 'ton') {
-            input.min = 1;
-            input.value = 1;
-            input.placeholder = 'Количество TON';
-            hint.textContent = 'Минимум: 1 TON';
-          } else {
-            input.min = 29;
-            input.value = 29;
-            input.placeholder = 'Количество Stars';
-            hint.textContent = 'Минимум: 29 Stars';
-          }
+            const currency = document.getElementById('topupCurrency').value;
+            const input = document.getElementById('topupAmount');
+            const hint = document.getElementById('topupHint');
+            if (currency === 'ton') {
+                input.min = 1;
+                input.value = 1;
+                input.placeholder = 'Количество TON';
+                hint.textContent = 'Минимум: 1 TON';
+            } else {
+                input.min = 29;
+                input.value = 29;
+                input.placeholder = 'Количество Stars';
+                hint.textContent = 'Минимум: 29 Stars';
+            }
         }
 
         function openStoryModal(chapter) {
-          document.getElementById('storyModalTitle').textContent = `Глава ${chapter.id}: ${chapter.title}`;
-          document.getElementById('storyModalContent').innerHTML = chapter.content.replace(/\n/g, '<br>');
-          document.getElementById('storyEasterWord').textContent = chapter.easterWord;
-          document.getElementById('storyModal').classList.add('active');
+            document.getElementById('storyModalTitle').textContent = `Глава ${chapter.id}: ${chapter.title}`;
+            document.getElementById('storyModalContent').innerHTML = chapter.content.replace(/\n/g, '<br>');
+            document.getElementById('storyEasterWord').textContent = chapter.easter_word;
+            document.getElementById('storyModal').classList.add('active');
         }
 
         let currentBuyChapter;
         function openBuyChapterModal(chapter) {
-          currentBuyChapter = chapter;
-          document.getElementById('buyChapterName').textContent = `Главу ${chapter.id}: ${chapter.title}`;
-          updateBuyChapterPrice();
-          document.getElementById('buyChapterModal').classList.add('active');
-          document.getElementById('buyCurrency').addEventListener('change', updateBuyChapterPrice);
+            currentBuyChapter = chapter;
+            document.getElementById('buyChapterName').textContent = `Главу ${chapter.id}: ${chapter.title}`;
+            updateBuyChapterPrice();
+            document.getElementById('buyChapterModal').classList.add('active');
+            document.getElementById('buyCurrency').addEventListener('change', updateBuyChapterPrice);
         }
 
         function updateBuyChapterPrice() {
-          const currency = document.getElementById('buyCurrency').value;
-          const priceSpan = document.getElementById('buyChapterPrice');
-          if (currency === 'ton') {
-            priceSpan.textContent = `${currentBuyChapter.tonPrice} TON`;
-          } else {
-            priceSpan.textContent = `${currentBuyChapter.price} ⭐`;
-          }
+            const currency = document.getElementById('buyCurrency').value;
+            const priceSpan = document.getElementById('buyChapterPrice');
+            if (currency === 'ton') {
+                priceSpan.textContent = `${currentBuyChapter.ton_price} TON`;
+            } else {
+                priceSpan.textContent = `${currentBuyChapter.price} ⭐`;
+            }
         }
 
         async function confirmBuyChapter() {
-          const currency = document.getElementById('buyCurrency').value;
-          closeModal('buyChapterModal');
+            const currency = document.getElementById('buyCurrency').value;
+            closeModal('buyChapterModal');
 
-          if (currency === 'stars') {
-            if (userData.balance < currentBuyChapter.price) {
-              showToast('Недостаточно Stars на балансе', 'error');
-              return;
+            if (currency === 'stars') {
+                if (userData.balance < currentBuyChapter.price) {
+                    showToast('Недостаточно Stars на балансе', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${backendUrl}/buy-chapter`, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json', 
+                            'Authorization': initData 
+                        },
+                        body: JSON.stringify({ 
+                            chapterId: currentBuyChapter.id,
+                            currency: 'stars'
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        userData.unlockedChapters.push(currentBuyChapter.id);
+                        userData.dailyOpened++;
+                        userData.balance -= currentBuyChapter.price;
+                        document.getElementById('balanceAmount').textContent = userData.balance;
+                        await loadHistory();
+                        showToast('Глава успешно открыта!', 'success');
+                        openStoryModal(currentBuyChapter);
+                    } else {
+                        showToast(result.error || 'Ошибка при покупке главы', 'error');
+                    }
+                } catch (e) {
+                    console.error(e);
+                    showToast('Ошибка соединения с сервером', 'error');
+                }
+            } 
+            else if (currency === 'ton') {
+                if (currentBuyChapter.ton_price <= 0) {
+                    showToast('Эта глава не продаётся за TON', 'error');
+                    return;
+                }
+
+                try {
+                    if (!tonConnectUI.connected) {
+                        await tonConnectUI.connectWallet();
+                    }
+
+                    if (!tonConnectUI.connected) {
+                        showToast('Не удалось подключить кошелёк', 'error');
+                        return;
+                    }
+
+                    const transaction = {
+                        validUntil: Math.floor(Date.now() / 1000) + 360,
+                        messages: [
+                            {
+                                address: RECEIVER_ADDRESS,
+                                amount: (currentBuyChapter.ton_price * 1e9).toString(),
+                                payload: btoa(
+                                    JSON.stringify({
+                                        type: 'buy_chapter',
+                                        userId: user.id,
+                                        chapterId: currentBuyChapter.id,
+                                        initData: initData
+                                    })
+                                )
+                            }
+                        ]
+                    };
+
+                    showToast('Подтвердите транзакцию в кошельке...', 'success');
+
+                    const result = await tonConnectUI.sendTransaction(transaction);
+
+                    if (result) {
+                        showToast('Транзакция отправлена! Ожидайте подтверждения...', 'success');
+                        
+                        startPurchasePolling(currentBuyChapter.id);
+                    }
+                } catch (e) {
+                    console.error(e);
+                    showToast(e.message || 'Ошибка при отправке транзакции', 'error');
+                }
             }
-
-            try {
-              const response = await fetch(`${backendUrl}/buy-chapter`, {
-                method: 'POST',
-                headers: { 
-                  'Content-Type': 'application/json', 
-                  'Authorization': initData 
-                },
-                body: JSON.stringify({ 
-                  chapterId: currentBuyChapter.id,
-                  currency: 'stars'
-                })
-              });
-
-              const result = await response.json();
-
-              if (response.ok && result.success) {
-                userData.unlockedChapters.push(currentBuyChapter.id);
-                userData.dailyOpened++;
-                userData.balance -= currentBuyChapter.price;
-                document.getElementById('balanceAmount').textContent = userData.balance;
-                await loadHistory();
-                showToast('Глава успешно открыта!', 'success');
-                openStoryModal(currentBuyChapter);
-              } else {
-                showToast(result.error || 'Ошибка при покупке главы', 'error');
-              }
-            } catch (e) {
-              console.error(e);
-              showToast('Ошибка соединения с сервером', 'error');
-            }
-          } 
-          else if (currency === 'ton') {
-            if (currentBuyChapter.tonPrice <= 0) {
-              showToast('Эта глава не продаётся за TON', 'error');
-              return;
-            }
-
-            try {
-              // Подключаем кошелёк если ещё не подключен
-              if (!tonConnectUI.connected) {
-                await tonConnectUI.connectWallet();
-              }
-
-              if (!tonConnectUI.connected) {
-                showToast('Не удалось подключить кошелёк', 'error');
-                return;
-              }
-
-              // Формируем транзакцию
-              const transaction = {
-                validUntil: Math.floor(Date.now() / 1000) + 360,
-                messages: [
-                  {
-                    address: RECEIVER_ADDRESS,
-                    amount: (currentBuyChapter.tonPrice * 1e9).toString(), // nanoTON
-                    payload: btoa(
-                      JSON.stringify({
-                        type: 'buy_chapter',
-                        userId: user.id,
-                        chapterId: currentBuyChapter.id,
-                        initData: initData
-                      })
-                    )
-                  }
-                ]
-              };
-
-              showToast('Подтвердите транзакцию в кошельке...', 'success');
-
-              const result = await tonConnectUI.sendTransaction(transaction);
-
-              if (result) {
-                showToast('Транзакция отправлена! Ожидайте подтверждения...', 'success');
-                
-                // Запускаем проверку статуса покупки
-                startPurchasePolling(currentBuyChapter.id);
-              }
-            } catch (e) {
-              console.error(e);
-              showToast(e.message || 'Ошибка при отправке транзакции', 'error');
-            }
-          }
         }
 
-        // Периодическая проверка покупки после оплаты TON
         function startPurchasePolling(chapterId) {
-          let attempts = 0;
-          const maxAttempts = 30; // ~5 минут при интервале 10 сек
+            let attempts = 0;
+            const maxAttempts = 30;
 
-          const interval = setInterval(async () => {
-            attempts++;
-            
-            try {
-              const response = await fetch(`${backendUrl}/check-purchase/${user.id}/${chapterId}`, {
-                headers: { 'Authorization': initData }
-              });
-              
-              const data = await response.json();
-              
-              if (data.purchased) {
-                clearInterval(interval);
-                userData.unlockedChapters.push(chapterId);
-                userData.dailyOpened++;
-                await loadHistory();
-                showToast('Глава успешно оплачена и открыта!', 'success');
+            const interval = setInterval(async () => {
+                attempts++;
                 
-                const chapter = storyChapters.find(ch => ch.id === chapterId);
-                if (chapter) openStoryModal(chapter);
-              }
-              
-              if (attempts >= maxAttempts) {
-                clearInterval(interval);
-                showToast('Покупка ещё не подтверждена. Проверьте позже.', 'warning');
-              }
-            } catch (e) {
-              console.error(e);
-            }
-          }, 10000);
+                try {
+                    const response = await fetch(`${backendUrl}/check-purchase/${user.id}/${chapterId}`, {
+                        headers: { 'Authorization': initData }
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.purchased) {
+                        clearInterval(interval);
+                        userData.unlockedChapters.push(chapterId);
+                        userData.dailyOpened++;
+                        await loadHistory();
+                        showToast('Глава успешно оплачена и открыта!', 'success');
+                        
+                        const chapter = storyChapters.find(ch => ch.id === chapterId);
+                        if (chapter) openStoryModal(chapter);
+                    }
+                    
+                    if (attempts >= maxAttempts) {
+                        clearInterval(interval);
+                        showToast('Покупка ещё не подтверждена. Проверьте позже.', 'warning');
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
+            }, 10000);
         }
 
-        // Polling для обновления баланса после оплаты (каждые 5 секунд в течение 2 минут)
         let pollingInterval;
         function startBalancePolling() {
-          if (pollingInterval) clearInterval(pollingInterval);
-          let attempts = 24; // 2 минуты / 5 сек = 24 попытки
-          pollingInterval = setInterval(async () => {
-            await loadProfile();
-            attempts--;
-            if (attempts <= 0) clearInterval(pollingInterval);
-          }, 5000);
+            if (pollingInterval) clearInterval(pollingInterval);
+            let attempts = 24;
+            pollingInterval = setInterval(async () => {
+                await loadProfile();
+                attempts--;
+                if (attempts <= 0) clearInterval(pollingInterval);
+            }, 5000);
         }
 
-        // Обработка пополнения (Stars или TON)
         async function processTopup() {
-          const currency = document.getElementById('topupCurrency').value;
-          const amount = parseFloat(document.getElementById('topupAmount').value);
+            const currency = document.getElementById('topupCurrency').value;
+            const amount = parseFloat(document.getElementById('topupAmount').value);
 
-          closeModal('topupModal');
+            closeModal('topupModal');
 
-          if (currency === 'stars') {
-            if (amount < 29 || isNaN(amount)) {
-              showToast('Минимум 29 Stars', 'error');
-              return;
+            if (currency === 'stars') {
+                if (amount < 29 || isNaN(amount)) {
+                    showToast('Минимум 29 Stars', 'error');
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`${backendUrl}/create_invoice`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ 
+                            initData: tg.initData, 
+                            amount: Math.round(amount),
+                            currency: 'stars'
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        showToast('Счёт на Stars отправлен! Проверьте чат с ботом.', 'success');
+                        startBalancePolling();
+                    } else {
+                        showToast(data.error || 'Ошибка создания счёта', 'error');
+                    }
+                } catch (e) {
+                    showToast('Ошибка соединения', 'error');
+                }
+            } 
+            else if (currency === 'ton') {
+                if (amount < 1 || isNaN(amount)) {
+                    showToast('Минимум 1 TON', 'error');
+                    return;
+                }
+
+                try {
+                    if (!tonConnectUI.connected) {
+                        await tonConnectUI.connectWallet();
+                    }
+
+                    if (!tonConnectUI.connected) {
+                        showToast('Не удалось подключить кошелёк', 'error');
+                        return;
+                    }
+
+                    const transaction = {
+                        validUntil: Math.floor(Date.now() / 1000) + 360,
+                        messages: [
+                            {
+                                address: RECEIVER_ADDRESS,
+                                amount: (amount * 1e9).toString(),
+                                payload: btoa(
+                                    JSON.stringify({
+                                        type: 'topup',
+                                        userId: user.id,
+                                        amount: amount,
+                                        initData: initData
+                                    })
+                                )
+                            }
+                        ]
+                    };
+
+                    showToast(`Отправляете ${amount} TON... Подтвердите в кошельке`, 'success');
+
+                    const result = await tonConnectUI.sendTransaction(transaction);
+
+                    if (result) {
+                        showToast('Транзакция отправлена! Баланс обновится после подтверждения', 'success');
+                        startBalancePolling();
+                    }
+                } catch (e) {
+                    console.error(e);
+                    showToast(e.message || 'Ошибка при пополнении', 'error');
+                }
             }
-
-            try {
-              const response = await fetch(`${backendUrl}/create_invoice`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                  initData: tg.initData, 
-                  amount: Math.round(amount),
-                  currency: 'stars'
-                })
-              });
-
-              const data = await response.json();
-
-              if (data.success) {
-                showToast('Счёт на Stars отправлен! Проверьте чат с ботом.', 'success');
-                startBalancePolling();
-              } else {
-                showToast(data.error || 'Ошибка создания счёта', 'error');
-              }
-            } catch (e) {
-              showToast('Ошибка соединения', 'error');
-            }
-          } 
-          else if (currency === 'ton') {
-            if (amount < 1 || isNaN(amount)) {
-              showToast('Минимум 1 TON', 'error');
-              return;
-            }
-
-            try {
-              if (!tonConnectUI.connected) {
-                await tonConnectUI.connectWallet();
-              }
-
-              if (!tonConnectUI.connected) {
-                showToast('Не удалось подключить кошелёк', 'error');
-                return;
-              }
-
-              const transaction = {
-                validUntil: Math.floor(Date.now() / 1000) + 360,
-                messages: [
-                  {
-                    address: RECEIVER_ADDRESS,
-                    amount: (amount * 1e9).toString(),
-                    payload: btoa(
-                      JSON.stringify({
-                        type: 'topup',
-                        userId: user.id,
-                        amount: amount,
-                        initData: initData
-                      })
-                    )
-                  }
-                ]
-              };
-
-              showToast(`Отправляете ${amount} TON... Подтвердите в кошельке`, 'success');
-
-              const result = await tonConnectUI.sendTransaction(transaction);
-
-              if (result) {
-                showToast('Транзакция отправлена! Баланс обновится после подтверждения', 'success');
-                startBalancePolling();
-              }
-            } catch (e) {
-              console.error(e);
-              showToast(e.message || 'Ошибка при пополнении', 'error');
-            }
-          }
         }
 
         function copyRefLink() {
-          navigator.clipboard.writeText(userData.refLink).then(() => {
-            showToast('Ссылка скопирована!', 'success');
-          });
+            navigator.clipboard.writeText(userData.refLink).then(() => {
+                showToast('Ссылка скопирована!', 'success');
+            });
         }
 
         function closeModal(modalId) {
-          document.getElementById(modalId).classList.remove('active');
+            document.getElementById(modalId).classList.remove('active');
         }
 
         function showToast(message, type = 'success') {
-          const toast = document.getElementById('toast');
-          toast.textContent = message;
-          toast.className = `toast show ${type}`;
-          setTimeout(() => toast.classList.remove('show'), 3000);
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast show ${type}`;
+            setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // Генерация звезд и снежинок
         function generateStars() {
-          const container = document.getElementById('starsContainer');
-          for (let i = 0; i < 200; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            star.style.left = `${Math.random() * 100}%`;
-            star.style.top = `${Math.random() * 100}%`;
-            star.style.animationDelay = `${Math.random() * 2}s`;
-            star.style.animationDuration = `${2 + Math.random() * 3}s`;
-            container.appendChild(star);
-          }
-          for (let i = 0; i < 5; i++) {
-            const shooting = document.createElement('div');
-            shooting.className = 'shooting-star';
-            shooting.style.left = `${Math.random() * 100}%`;
-            shooting.style.top = `${Math.random() * 50}%`;
-            shooting.style.animationDelay = `${Math.random() * 5}s`;
-            shooting.style.animationDuration = `${5 + Math.random() * 5}s`;
-            container.appendChild(shooting);
-          }
+            const container = document.getElementById('starsContainer');
+            for (let i = 0; i < 300; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.animationDelay = `${Math.random() * 2}s`;
+                star.style.animationDuration = `${2 + Math.random() * 3}s`;
+                container.appendChild(star);
+            }
+            for (let i = 0; i < 50; i++) {
+                const light = document.createElement('div');
+                light.className = `christmas-light ${['red', 'green', 'blue'][Math.floor(Math.random() * 3)]}`;
+                light.style.left = `${Math.random() * 100}%`;
+                light.style.top = `${Math.random() * 100}%`;
+                light.style.animationDelay = `${Math.random() * 1.5}s`;
+                container.appendChild(light);
+            }
+            for (let i = 0; i < 10; i++) {
+                const shooting = document.createElement('div');
+                shooting.className = 'shooting-star';
+                shooting.style.left = `${Math.random() * 100}%`;
+                shooting.style.top = `${Math.random() * 50}%`;
+                shooting.style.animationDelay = `${Math.random() * 5}s`;
+                shooting.style.animationDuration = `${5 + Math.random() * 5}s`;
+                container.appendChild(shooting);
+            }
         }
 
         function generateSnowflakes() {
-          for (let i = 0; i < 50; i++) {
-            const flake = document.createElement('div');
-            flake.className = 'snowflake';
-            flake.textContent = '❄';
-            flake.style.left = `${Math.random() * 100}%`;
-            flake.style.animationDuration = `${10 + Math.random() * 20}s`;
-            flake.style.animationDelay = `${Math.random() * 10}s`;
-            flake.style.fontSize = `${0.5 + Math.random() * 1}rem`;
-            flake.style.opacity = Math.random() * 0.5 + 0.5;
-            document.body.appendChild(flake);
-          }
+            for (let i = 0; i < 100; i++) {
+                const flake = document.createElement('div');
+                flake.className = 'snowflake';
+                flake.textContent = '❄';
+                flake.style.left = `${Math.random() * 100}%`;
+                flake.style.animationDuration = `${10 + Math.random() * 20}s`;
+                flake.style.animationDelay = `${Math.random() * 10}s`;
+                flake.style.fontSize = `${0.5 + Math.random() * 1.5}rem`;
+                flake.style.opacity = Math.random() * 0.5 + 0.5;
+                document.body.appendChild(flake);
+            }
         }
 
-        // Инициализация
         async function init() {
-          generateStars();
-          generateSnowflakes();
-          await loadProfile();
-          await loadChapters(); // Загрузка глав с бэкенда
-          if (user.id === ADMIN_ID) {
-            const adminButton = document.createElement('button');
-            adminButton.className = 'nav-item';
-            adminButton.onclick = () => showPage('Admin');
-            adminButton.innerHTML = `<i class="fas fa-cog"></i><span>Админ</span>`;
-            document.getElementById('bottomNav').appendChild(adminButton);
-            document.getElementById('pageAdmin').style.display = 'block';
-          }
-          showPage('Profile');
+            generateStars();
+            generateSnowflakes();
+            await loadProfile();
+            await loadChapters();
+            if (user.id === ADMIN_ID) {
+                const adminButton = document.createElement('button');
+                adminButton.className = 'nav-item';
+                adminButton.onclick = () => showPage('Admin');
+                adminButton.innerHTML = `<i class="fas fa-cog"></i><span>Админ</span>`;
+                document.getElementById('bottomNav').appendChild(adminButton);
+                document.getElementById('pageAdmin').style.display = 'block';
+                document.getElementById('addTaskButton').style.display = 'block';
+            }
+            showPage('Profile');
+            setInterval(async () => {
+                await loadProfile();
+                if (document.getElementById('pageTop').classList.contains('active')) await loadTop();
+                if (document.getElementById('pageTasks').classList.contains('active')) await loadTasks();
+                if (document.getElementById('pageHistory').classList.contains('active')) await loadHistory();
+            }, 30000);
         }
 
         async function loadChapters() {
-          try {
-            const response = await fetch(`${backendUrl}/chapters`);
-            storyChapters = await response.json();
-          } catch (e) {
-            console.error(e);
-          }
+            try {
+                const response = await fetch(`${backendUrl}/chapters`);
+                storyChapters = await response.json();
+            } catch (e) {
+                console.error(e);
+            }
         }
 
         init();
 
         document.querySelectorAll('.modal-overlay').forEach(overlay => {
-          overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) closeModal(overlay.id);
-          });
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) closeModal(overlay.id);
+            });
         });
     </script>
 </body>
